@@ -1,10 +1,4 @@
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../assets/constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
@@ -25,15 +19,6 @@ export default function MessageScreenHeader() {
         <Text style={styles.searchText}>Search</Text>
         <Ionicons name="search-outline" size={20} color="gray" />
       </Pressable>
-
-      {/* NOTIFICATION */}
-      <TouchableOpacity>
-        <Ionicons
-          name="notifications-circle-outline"
-          size={36}
-          color={COLORS.primary}
-        />
-      </TouchableOpacity>
     </View>
   );
 }

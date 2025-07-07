@@ -1,4 +1,4 @@
-import HomeScreenHeader from "../../components/home/homeScreenHeader";
+import HomeScreenHeader from "../../components/favorites/favoritesScreenHeader";
 import FavoritesContent from "../../components/favorites/favoritesContent";
 import React, { useEffect, useState } from "react";
 import axios from "axios";

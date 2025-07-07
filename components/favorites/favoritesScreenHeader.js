@@ -29,10 +29,9 @@ export default function HomeScreenHeader() {
 
       {/* NOTIFICATION */}
       <TouchableOpacity onPress={() => router.push("/login")}>
-        <Ionicons
-          name="notifications-circle-outline"
-          size={36}
-          color={COLORS.primary}
+        <Image
+          source={require("../../assets/images/donate.png")}
+          style={{ width: 30, height: 30 }}
         />
       </TouchableOpacity>
     </View>
