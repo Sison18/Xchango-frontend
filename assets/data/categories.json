@@ -1,0 +1,73 @@
+[
+  {
+    "id": 1,
+    "name": "Vehicles",
+    "imageKey": "C1"
+  },
+  {
+    "id": 2,
+    "name": "Fashion",
+    "imageKey": "C2"
+  },
+  {
+    "id": 3,
+    "name": "Home & Living",
+    "imageKey": "C3"
+  },
+  {
+    "id": 4,
+    "name": "Books",
+    "imageKey": "C4"
+  },
+  {
+    "id": 5,
+    "name": "Electronics",
+    "imageKey": "C5"
+  },
+
+  {
+    "id": 6,
+    "name": "Toys",
+    "imageKey": "C6"
+  },
+  {
+    "id": 7,
+    "name": "Tools",
+    "imageKey": "C7"
+  },
+  {
+    "id": 8,
+    "name": "Beauty",
+    "imageKey": "C8"
+  },
+  {
+    "id": 9,
+    "name": "Sports",
+    "imageKey": "C9"
+  },
+  {
+    "id": 10,
+    "name": "Pets Tools",
+    "imageKey": "C10"
+  },
+  {
+    "id": 11,
+    "name": "Gardening",
+    "imageKey": "C11"
+  },
+  {
+    "id": 12,
+    "name": "Antiques",
+    "imageKey": "C12"
+  },
+  {
+    "id": 13,
+    "name": "Instruments",
+    "imageKey": "C13"
+  },
+  {
+    "id": 14,
+    "name": "Others",
+    "imageKey": "C14"
+  }
+]
