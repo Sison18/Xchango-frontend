@@ -15,7 +15,7 @@ export default function SplashScreen() {
       />
       <LinearGradient colors={["#C5F6D0", "#F1F1F1"]} style={styles.container}>
         <SafeAreaProvider style={styles.container}>
-          <Link href="/home" asChild>
+          <Link href="/welcome" asChild>
             <TouchableOpacity>
               {/* LOGO IMAGE */}
               <Animatable.Image
