@@ -28,7 +28,7 @@ export default function HomeScreenHeader() {
       </Pressable>
 
       {/* NOTIFICATION */}
-      <TouchableOpacity onPress={() => router.push("/login")}>
+      <TouchableOpacity onPress={() => router.push("/donateNow")}>
         <Image
           source={require("../../assets/images/donate.png")}
           style={{ width: 30, height: 30 }}

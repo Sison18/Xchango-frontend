@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -6,21 +7,24 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import Animated, { FadeInRight } from "react-native-reanimated";
 
 export default function ChatList({ products }) {
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.chatCard}>
-      <Image source={{ uri: item.profile }} style={styles.avatar} />
-      <View style={styles.textContainer}>
-        <View style={styles.topRow}>
-          <Text style={styles.name}>{item.userName}</Text>
-          <Text style={styles.time}>{item.time}</Text>
+  const renderItem = ({ item, index }) => (
+    <Animated.View entering={FadeInRight.delay(index * 100).duration(500)}>
+      <TouchableOpacity style={styles.chatCard}>
+        <Image source={{ uri: item.profile }} style={styles.avatar} />
+        <View style={styles.textContainer}>
+          <View style={styles.topRow}>
+            <Text style={styles.name}>{item.userName}</Text>
+            <Text style={styles.time}>{item.time}</Text>
+          </View>
+          <Text style={styles.message} numberOfLines={1}>
+            {item.message}
+          </Text>
         </View>
-        <Text style={styles.message} numberOfLines={1}>
-          {item.message}
-        </Text>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   return (
@@ -28,7 +32,7 @@ export default function ChatList({ products }) {
       <FlatList
         data={products}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 80 }}
       />
@@ -81,10 +85,5 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 14,
     color: "#444",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

@@ -1,33 +1,58 @@
-// ✅ File 2: ProfileSection.js
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { COLORS } from "../../assets/constants/theme";
 import Line from "../../assets/constants/line";
+import Animated, { FadeInUp } from "react-native-reanimated";
 
 export default function ProfileSection() {
+  const shippingIcons = [
+    { name: "truck-loading", label: "Preparing", size: 18 },
+    { name: "shipping-fast", label: "To Ship", size: 18 },
+    { name: "hand-holding", label: "To Receive", size: 23 },
+    { name: "check-circle", label: "Completed", size: 20 },
+  ];
+
+  const meetupIcons = [
+    { name: "truck-loading", label: "Preparing", size: 18 },
+    { name: "calendar-day", label: "Scheduled", size: 18 },
+    { name: "user-friends", label: "Meet Up", size: 18 },
+    { name: "check-circle", label: "Completed", size: 20 },
+  ];
+
   return (
     <View>
       {/* SHIPPING PROCESS */}
       <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
         <Text style={styles.sectionTitle}>Shipping Process</Text>
         <View style={styles.iconRow}>
-          <ProcessIcon name="truck-loading" label="Preparing" size={18} />
-          <ProcessIcon name="shipping-fast" label="To Ship" size={18} />
-          <ProcessIcon name="hand-holding" label="To Receive" size={23} />
-          <ProcessIcon name="check-circle" label="Completed" size={20} />
+          {shippingIcons.map((icon, index) => (
+            <ProcessIcon
+              key={index}
+              name={icon.name}
+              label={icon.label}
+              size={icon.size}
+              index={index}
+            />
+          ))}
         </View>
       </View>
 
       <Line customise={{ borderWidth: 5, borderColor: "#E5E7EB" }} />
 
-      {/* MEETU-UP PROCESS */}
+      {/* MEET-UP PROCESS */}
       <View style={{ paddingHorizontal: 20, paddingBottom: 10 }}>
         <Text style={styles.sectionTitle}>Meet-Up Process</Text>
         <View style={styles.iconRow}>
-          <ProcessIcon name="calendar-day" label="Scheduled" size={18} />
-          <ProcessIcon name="user-friends" label="Meet Up" size={18} />
-          <ProcessIcon name="check-circle" label="Completed" size={20} />
+          {meetupIcons.map((icon, index) => (
+            <ProcessIcon
+              key={index}
+              name={icon.name}
+              label={icon.label}
+              size={icon.size}
+              index={index}
+            />
+          ))}
         </View>
       </View>
 
@@ -36,11 +61,14 @@ export default function ProfileSection() {
   );
 }
 
-const ProcessIcon = ({ name, label, size }) => (
-  <View style={styles.iconContainer}>
+const ProcessIcon = ({ name, label, size, index = 0 }) => (
+  <Animated.View
+    entering={FadeInUp.delay(index * 100).duration(400)}
+    style={styles.iconContainer}
+  >
     <FontAwesome5 name={name} size={size} color={"#6B7280"} />
     <Text style={styles.iconLabel}>{label}</Text>
-  </View>
+  </Animated.View>
 );
 
 const styles = StyleSheet.create({

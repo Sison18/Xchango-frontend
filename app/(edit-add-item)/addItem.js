@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,17 +17,21 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { COLORS } from "../../../assets/constants/theme";
-import InputField from "../../../components/textField/inputField";
-import CustomPicker from "../../(trade-add-item)/CustomPicker";
+import { COLORS } from "../../assets/constants/theme";
+import InputField from "../../components/textField/inputField";
+import Wishlist from "../../components/trade/add-item/wishlist";
+import CustomPicker from "../../components/trade/add-item/CustomPicker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import axios from "axios";
+import useBackConfirmation from "../../components/reusable components/cancelConfirmation";
 
-export default function RequestTrade() {
+export default function ProductForm() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedTradeOption, setSelectedTradeOption] = useState("");
   const [imageUris, setImageUris] = useState([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
@@ -53,6 +57,7 @@ export default function RequestTrade() {
       !description ||
       !price ||
       !selectedStatus ||
+      !selectedTradeOption ||
       imageUris.length === 0
     ) {
       Alert.alert("Missing Info", "Please complete all fields.");
@@ -76,6 +81,26 @@ export default function RequestTrade() {
     setSelectedImageUri(null);
   };
 
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    getProductsDetails();
+  }, []);
+
+  const getProductsDetails = async () => {
+    const URL = `http://192.168.100.10:5000/products`;
+    try {
+      const response = await axios.get(URL);
+      if (response.data.length > 0) {
+        setProduct(response.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error.message);
+    }
+  };
+
+  useBackConfirmation("Are you sure you want to cancel this post?");
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <StatusBar
@@ -97,7 +122,7 @@ export default function RequestTrade() {
             {/* CONTENT CONTAINER */}
             <View style={styles.contentContainer}>
               <Text style={styles.headertxt}>
-                Make an offer to start the trade. 💬
+                Got Something to Offer? Post It! 💬
               </Text>
 
               {/* IMAGE INPUT */}
@@ -150,7 +175,9 @@ export default function RequestTrade() {
                     style={styles.imageIconTextContainer}
                   >
                     <Ionicons name="image-outline" size={40} color="#ccc" />
-                    <Text style={styles.imageText}>Select Images</Text>
+                    <Text style={{ color: COLORS.secondary }}>
+                      Select Images
+                    </Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -171,6 +198,8 @@ export default function RequestTrade() {
                 onChangeText={setDescription}
                 value={description}
                 inputStyle={styles.nameDescriptionPriceStyle}
+                multiline={true}
+                numberOfLines={2}
               />
 
               {/* STATUS & PRICE CONTAINER */}
@@ -204,24 +233,46 @@ export default function RequestTrade() {
                 </View>
               </View>
 
+              {/* TRANSACTION */}
+              <CustomPicker
+                placeholder="Select transaction option"
+                selectedValue={selectedTradeOption}
+                onValueChange={setSelectedTradeOption}
+                options={[
+                  { label: "Meet-up", value: "Meet-up" },
+                  { label: "Shipping Available", value: "Shipping Available" },
+                  { label: "Any", value: "Any" },
+                ]}
+              />
+
+              {/* LOCATION */}
+              <Text style={styles.location}>
+                {product?.address?.[0]
+                  ? `${product.address[0].street}, ${product.address[0].barangay}, ${product.address[0].city}, ${product.address[0].postalCode}`
+                  : "Location not available"}
+              </Text>
+
+              {/* WISHLIST */}
+              <Wishlist />
+
               {/* POST BUTTON */}
               <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
-                <Text style={styles.postButtonText}>REQUEST</Text>
+                <Text style={styles.postButtonText}>POST</Text>
               </TouchableOpacity>
 
               {/* CANCEL BUTTON */}
               <TouchableOpacity
                 style={styles.cancelBtn}
-                onPress={() => {
+                onPress={() =>
                   Alert.alert(
-                    "Cancel Post?",
-                    "Are you sure you want to cancel?",
+                    "Cancel confirmation",
+                    "Are you sure you want to cancel this post?",
                     [
                       { text: "No", style: "cancel" },
                       { text: "Yes", onPress: () => router.back() },
                     ]
-                  );
-                }}
+                  )
+                }
               >
                 <Text style={styles.postButtonText}>CANCEL</Text>
               </TouchableOpacity>
@@ -261,7 +312,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingBottom: 80,
-    paddingTop: 80,
+    paddingTop: 20,
     paddingHorizontal: 30,
   },
 
@@ -332,6 +383,19 @@ const styles = StyleSheet.create({
     borderColor: COLORS.placeholder,
     width: "100%",
     fontSize: 14,
+  },
+
+  // LOCATION
+  location: {
+    fontSize: 14,
+    borderWidth: 1,
+    backgroundColor: COLORS.textbox,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    color: COLORS.primary,
+    marginTop: 20,
+    borderColor: COLORS.placeholder,
+    borderRadius: 7,
   },
 
   // STATUS & PRICE CONTAINER

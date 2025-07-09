@@ -17,19 +17,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { COLORS } from "../../assets/constants/theme";
-import InputField from "../../components/textField/inputField";
-import Wishlist from "./wishlist";
-import CustomPicker from "./CustomPicker";
+import { COLORS } from "../../../assets/constants/theme";
+import InputField from "../../../components/textField/inputField";
+import CustomPicker from "../../../components/trade/add-item/CustomPicker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
-export default function ProductForm() {
+export default function RequestTrade() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedTradeOption, setSelectedTradeOption] = useState("");
   const [imageUris, setImageUris] = useState([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
@@ -55,7 +53,6 @@ export default function ProductForm() {
       !description ||
       !price ||
       !selectedStatus ||
-      !selectedTradeOption ||
       imageUris.length === 0
     ) {
       Alert.alert("Missing Info", "Please complete all fields.");
@@ -100,7 +97,7 @@ export default function ProductForm() {
             {/* CONTENT CONTAINER */}
             <View style={styles.contentContainer}>
               <Text style={styles.headertxt}>
-                Got Something to Offer? Post It! 💬
+                Make an offer to start the trade. 💬
               </Text>
 
               {/* IMAGE INPUT */}
@@ -207,24 +204,9 @@ export default function ProductForm() {
                 </View>
               </View>
 
-              {/* TRANSACTION */}
-              <CustomPicker
-                placeholder="Select transaction option"
-                selectedValue={selectedTradeOption}
-                onValueChange={setSelectedTradeOption}
-                options={[
-                  { label: "Meet-up", value: "Meet-up" },
-                  { label: "Shipping Available", value: "Shipping Available" },
-                  { label: "Any", value: "Any" },
-                ]}
-              />
-
-              {/* WISHLIST */}
-              <Wishlist />
-
               {/* POST BUTTON */}
               <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
-                <Text style={styles.postButtonText}>POST</Text>
+                <Text style={styles.postButtonText}>REQUEST</Text>
               </TouchableOpacity>
 
               {/* CANCEL BUTTON */}

@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image,
 } from "react-native";
 import { COLORS } from "../../assets/constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";

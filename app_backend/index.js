@@ -56,6 +56,14 @@ const products = [
     verification: false,
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Taguig City",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p2",

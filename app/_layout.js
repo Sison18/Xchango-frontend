@@ -8,29 +8,37 @@ export default function RootLayout() {
         headerShown: false,
       }}
     >
+      {/* ALL WELCOME */}
       <Stack.Screen
         name="(welcome-page)/welcome"
         options={{
           gestureEnabled: false,
         }}
       />
-
+      {/* ALL AUTH */}
       <Stack.Screen
         name="(authentications)"
         options={{
           gestureEnabled: false,
         }}
       />
-
+      {/* ALL BOTTOM TABS */}
       <Stack.Screen
         name="(tabs)"
         options={{
           gestureEnabled: false,
         }}
       />
-
+      {/* ADD ITEM */}
       <Stack.Screen
-        name="(trade-add-item)/addItem"
+        name="(edit-add-item)/addItem"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
+      {/* DONATE NOW */}
+      <Stack.Screen
+        name="(donate)/donateNow"
         options={{
           gestureEnabled: false,
         }}

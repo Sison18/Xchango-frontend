@@ -1,0 +1,30 @@
+[
+  {
+    "question": "How do I exchange items on XChango?",
+    "answer": "Go to the Trade section, browse or post your item, and send a trade request. Confirm and arrange delivery or meetup."
+  },
+  {
+    "question": "How do I verify my account?",
+    "answer": "Navigate to your Profile > Settings > Verification. Upload a valid ID and selfie to complete verification."
+  },
+  {
+    "question": "How can I donate items?",
+    "answer": "Navigate to your Profile > Settings > Donate now. Select the item to donate, fill up the form and submit."
+  },
+  {
+    "question": "How do I start a chat with someone?",
+    "answer": "Click 'Chat' on any item or profile you're interested in to talk directly with the trader."
+  },
+  {
+    "question": "How do I trade my item?",
+    "answer": "Post your item in the Trade section, set your preferred exchange, and wait for a match or initiate a trade yourself."
+  },
+  {
+    "question": "How does the trading process work?",
+    "answer": "Both users agree on a trade, confirm the deal, and chat to coordinate the exchange."
+  },
+  {
+    "question": "What if there's a difference in item value?",
+    "answer": "You can balance the trade by adding more items or add cash to equalize the value."
+  }
+]

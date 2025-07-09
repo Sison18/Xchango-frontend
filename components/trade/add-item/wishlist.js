@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { COLORS } from "../../assets/constants/theme";
+import { COLORS } from "../../../assets/constants/theme";
 
 export default function Wishlist() {
   const [text, setText] = useState("");

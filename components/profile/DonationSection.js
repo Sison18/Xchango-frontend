@@ -2,23 +2,31 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { COLORS } from "../../assets/constants/theme";
 import Line from "../../assets/constants/line";
+import { router } from "expo-router";
+import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 
 export default function DonationSection() {
   return (
     <>
       {/* DONATION BOX--------------------------------------------- */}
-      <View style={styles.donationBox}>
+      <Animated.View entering={ZoomIn.duration(400)} style={styles.donationBox}>
         <Text style={styles.donationText}>
           Donating second-hand items helps others, reduces waste, and gives your
           belongings a new purpose...
         </Text>
-        <TouchableOpacity style={styles.donateButton}>
+        <TouchableOpacity
+          style={styles.donateButton}
+          onPress={() => router.push("/donateNow")}
+        >
           <Text style={styles.donateButtonText}>Donate now</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
       {/* DONATION BOTTOM BUTTONS---------------------------------- */}
-      <View style={styles.bottomButtons}>
+      <Animated.View
+        entering={FadeInDown.delay(300).duration(400)}
+        style={styles.bottomButtons}
+      >
         <TouchableOpacity style={styles.smallButton}>
           <Text style={styles.smallButtonText}>Your Donation</Text>
         </TouchableOpacity>
@@ -28,7 +36,7 @@ export default function DonationSection() {
         <TouchableOpacity style={styles.smallButton}>
           <Text style={styles.smallButtonText}>UnitedFeed</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
       <Line />
     </>

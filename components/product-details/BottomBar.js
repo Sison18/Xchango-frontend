@@ -33,7 +33,7 @@ export default function BottomBar() {
         {/* REQUEST BUTTON */}
         <TouchableOpacity
           style={styles.requestButton}
-          onPress={() => router.push("/request-trade/requestTrade")}
+          onPress={() => router.push("/requestTrade")}
         >
           <Text style={styles.requestText}>Request</Text>
         </TouchableOpacity>

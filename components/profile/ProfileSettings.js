@@ -62,6 +62,17 @@ export default function ProfileSettings() {
                 />
                 <Text style={styles.optionText}>Edit profile</Text>
               </TouchableOpacity>
+              {/* ACCOUNT VERIFICATION */}
+              <TouchableOpacity>
+                <View style={styles.EESLContainer}>
+                  <MaterialIcons
+                    name="verified"
+                    size={20}
+                    color={COLORS.primary}
+                  />
+                  <Text style={styles.optionText}>Account Verification</Text>
+                </View>
+              </TouchableOpacity>
               {/* EDIT PASSWORD */}
               <TouchableOpacity>
                 <View style={styles.EESLContainer}>
