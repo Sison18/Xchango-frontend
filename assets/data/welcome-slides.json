@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Welcome to XChango",
+    "description": "XChango is a barter and trading app where you can exchange goods or services with others",
+    "imageKey": "one"
+  },
+  {
+    "id": 2,
+    "title": "How It Works?",
+    "description": "Trade items or services with others nearby barter directly, add cash if needed, or combine both.",
+    "imageKey": "two"
+  },
+  {
+    "id": 3,
+    "title": "Why XChango?",
+    "description": "Xchango lets you trade smarter save money, reduce waste, and get more from what you already have. ",
+    "imageKey": "three"
+  },
+  {
+    "id": 4,
+    "title": "Get Started in Minutes",
+    "description": "Creating your account is quick and easy. Just sign up, list what you have or need, and start exploring nearby trades. ",
+    "imageKey": "four"
+  }
+]
