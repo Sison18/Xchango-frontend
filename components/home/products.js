@@ -1,19 +1,18 @@
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Image,
-  Dimensions,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { COLORS } from "../../../XChangoProject/assets/constants/theme";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { router } from "expo-router";
-import React from "react";
-import Line from "../../../XChangoProject/assets/constants/line";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import Line from "../../assets/constants/line";
+import { COLORS } from "../../assets/constants/theme";
 
 export default function Products({ products }) {
   const renderItem = ({ item, index }) => (

@@ -1,16 +1,15 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { COLORS } from "../../../XChangoProject/assets/constants/theme";
 import { router } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { COLORS } from "../../assets/constants/theme";
 
 export default function BottomBar() {
   return (
     <>
       {/* BOTTOM BAR CONTAINER */}
       <View style={styles.bottomBarContainer}>
-        {/* CHAT PAGE*/}
+        {/* CHAT PAGE */}
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() => router.push("/message")}
@@ -18,7 +17,7 @@ export default function BottomBar() {
           <AntDesign name="wechat" size={30} color={COLORS.secondary} />
         </TouchableOpacity>
 
-        {/* ADD TO FAVORITE PAGE */}
+        {/* FAVORITES PAGE */}
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() => router.push("/favorites")}
@@ -41,6 +40,7 @@ export default function BottomBar() {
     </>
   );
 }
+
 
 const styles = StyleSheet.create({
   // BOTTOM BAR CONTAINER
