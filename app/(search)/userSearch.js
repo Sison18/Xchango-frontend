@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, FlatList, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import SearchBar from "../../components/searchBar/search";
+import SearchBar from "../../components/search";
 import { COLORS } from "../../assets/constants/theme";
 import { router } from "expo-router";
 

@@ -1,11 +1,12 @@
-import { View, Text, StyleSheet, StatusBar, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, Platform } from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { COLORS, imageMap } from "../../assets/constants/theme";
 import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
 import { router } from "expo-router";
 import slides from "../../assets/data/welcome-slides.json";
 import { LinearGradient } from "expo-linear-gradient";
-import useDoubleBackExit from "../../components/reusable components/andoidUseDoubleBackExit";
+import useDoubleBackExit from "../../hooks/andoidUseDoubleBackExit";
+import { StatusBar } from "expo-status-bar";
 
 const { height } = Dimensions.get("window");
 
@@ -33,11 +34,7 @@ export default function OnboardingScreen() {
   return (
     <>
       {/* STATUS BAR */}
-      <StatusBar
-        barStyle={"dark-content"}
-        translucent
-        backgroundColor="transparent"
-      />
+      <StatusBar style="dark" translucent />
 
       {/* Nandito yung content na na s-slide */}
       <AppIntroSlider
@@ -118,6 +115,7 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     marginHorizontal: 4,
+    marginBottom: Platform.OS === "android" ? 100 : 50,
   },
   dotStyle: {
     backgroundColor: COLORS.secondary,
@@ -125,6 +123,7 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     marginHorizontal: 4,
+    marginBottom: Platform.OS === "android" ? 100 : 50,
   },
 
   // NEXT BUTTON
@@ -133,6 +132,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 25,
     paddingVertical: 7,
+    position: "relative",
+    bottom: Platform.OS === "android" ? 50 : 25,
   },
   nextButtonText: {
     fontWeight: "600",
@@ -147,6 +148,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 23,
     paddingVertical: 4,
+    position: "relative",
+    bottom: Platform.OS === "android" ? 50 : 25,
   },
   skipButtonText: {
     fontWeight: "600",

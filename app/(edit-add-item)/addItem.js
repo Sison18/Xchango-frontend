@@ -12,19 +12,19 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
-  StatusBar,
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../assets/constants/theme";
 import InputField from "../../components/textField/inputField";
-import Wishlist from "../../components/trade/add-item/wishlist";
-import CustomPicker from "../../components/trade/add-item/CustomPicker";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Wishlist from "../../components/wishlist";
+import CustomPicker from "../../components/CustomPicker";
 import { router } from "expo-router";
 import axios from "axios";
-import useBackConfirmation from "../../components/reusable components/cancelConfirmation";
+import useBackConfirmation from "../../hooks/cancelConfirmation";
+import { StatusBar } from "expo-status-bar";
+import HeaderBar from "../../components/header";
 
 export default function ProductForm() {
   const [name, setName] = useState("");
@@ -35,6 +35,7 @@ export default function ProductForm() {
   const [imageUris, setImageUris] = useState([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
+  const [location, setLocation] = useState("");
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -87,6 +88,15 @@ export default function ProductForm() {
     getProductsDetails();
   }, []);
 
+  useEffect(() => {
+    if (product?.address?.[0]) {
+      const addr = product.address[0];
+      setLocation(
+        `${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.regionProvince}, ${addr.postalCode}`
+      );
+    }
+  }, [product]);
+
   const getProductsDetails = async () => {
     const URL = `http://192.168.100.10:5000/products`;
     try {
@@ -102,29 +112,25 @@ export default function ProductForm() {
   useBackConfirmation("Are you sure you want to cancel this post?");
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-      <StatusBar
-        barStyle="dark-content"
-        translucent
-        backgroundColor="transparent"
-      />
-      {/* PARENT CONTAINER */}
-      <KeyboardAvoidingView
-        style={styles.flex1}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        {/* SCROLL CONTAINER */}
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <>
+      <StatusBar style="light" translucent />
+      {/* HEADER */}
+      <HeaderBar title="Post" />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        {/* PARENT CONTAINER */}
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoiding}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -40}
+        >
+          {/* SCROLL CONTAINER */}
           <ScrollView
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContainer}
           >
             {/* CONTENT CONTAINER */}
             <View style={styles.contentContainer}>
-              <Text style={styles.headertxt}>
-                Got Something to Offer? Post It! 💬
-              </Text>
-
               {/* IMAGE INPUT */}
               <View style={styles.imageBox}>
                 {imageUris.length > 0 ? (
@@ -246,40 +252,44 @@ export default function ProductForm() {
               />
 
               {/* LOCATION */}
-              <Text style={styles.location}>
-                {product?.address?.[0]
-                  ? `${product.address[0].street}, ${product.address[0].barangay}, ${product.address[0].city}, ${product.address[0].postalCode}`
-                  : "Location not available"}
-              </Text>
+              <InputField
+                value={location}
+                onChangeText={(text) => setLocation(text)}
+                placeholder="Enter location"
+                multiline
+                inputStyle={styles.locationStyle}
+              />
 
               {/* WISHLIST */}
               <Wishlist />
 
-              {/* POST BUTTON */}
-              <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
-                <Text style={styles.postButtonText}>POST</Text>
-              </TouchableOpacity>
+              <View style={styles.postCancelContainer}>
+                {/* POST BUTTON */}
+                <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
+                  <Text style={styles.postButtonText}>POST</Text>
+                </TouchableOpacity>
 
-              {/* CANCEL BUTTON */}
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() =>
-                  Alert.alert(
-                    "Cancel confirmation",
-                    "Are you sure you want to cancel this post?",
-                    [
-                      { text: "No", style: "cancel" },
-                      { text: "Yes", onPress: () => router.back() },
-                    ]
-                  )
-                }
-              >
-                <Text style={styles.postButtonText}>CANCEL</Text>
-              </TouchableOpacity>
+                {/* CANCEL BUTTON */}
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={() =>
+                    Alert.alert(
+                      "Cancel confirmation",
+                      "Are you sure you want to cancel this post?",
+                      [
+                        { text: "No", style: "cancel" },
+                        { text: "Yes", onPress: () => router.back() },
+                      ]
+                    )
+                  }
+                >
+                  <Text style={styles.postButtonText}>CANCEL</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
 
       {/* IMAGE VIEW */}
       <Modal visible={previewVisible} transparent animationType="fade">
@@ -291,45 +301,19 @@ export default function ProductForm() {
           />
         </Pressable>
       </Modal>
-    </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.mainBackgroundColor,
-  },
   // PARENT CONTAINER
-  flex1: { flex: 1 },
-  container: {
+  scrollContainer: {
+    paddingBottom: 50,
+    paddingHorizontal: 35,
+  },
+  keyboardAvoiding: {
     flex: 1,
-    backgroundColor: COLORS.mainBackgroundColor,
   },
-
-  // SCROLL CONTAINER
-  scrollContent: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 80,
-    paddingTop: 20,
-    paddingHorizontal: 30,
-  },
-
-  // CONTENT CONTAINER
-  contentContainer: {
-    width: "100%",
-  },
-  headertxt: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.primary,
-    textAlign: "center",
-    paddingHorizontal: 10,
-    paddingTop: 15,
-    paddingBottom: 30,
-  },
-
   // IMAGE INPUT
   imageBox: {
     borderWidth: 1,
@@ -340,6 +324,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: "100%",
     padding: 10,
+    marginTop: 30,
   },
   imageScrollContainer: {
     flexDirection: "row",
@@ -393,9 +378,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 15,
     color: COLORS.primary,
-    marginTop: 20,
     borderColor: COLORS.placeholder,
     borderRadius: 7,
+  },
+  locationStyle: {
+    borderColor: COLORS.placeholder,
+    width: "100%",
+    fontSize: 14,
+    marginTop: 30,
   },
 
   // STATUS & PRICE CONTAINER
@@ -409,13 +399,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  postCancelContainer: {
+    flexDirection: "row-reverse",
+    justifyContent: "center",
+    gap: 15,
+  },
   // POST BUTTON
   postBtn: {
     backgroundColor: COLORS.darkGreen,
-    padding: 14,
+    width: "45%",
+    padding: 10,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
   },
   postButtonText: {
     color: COLORS.mainBackgroundColor,
@@ -425,11 +420,11 @@ const styles = StyleSheet.create({
 
   // CANCEL BUTTON
   cancelBtn: {
-    backgroundColor: COLORS.welcomePageGray,
-    padding: 14,
+    backgroundColor: COLORS.placeholder,
+    width: "45%",
+    padding: 10,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
   },
 
   // IMAGE VIEW

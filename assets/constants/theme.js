@@ -4,12 +4,14 @@ export const COLORS = {
   secondary: "#6e7681",
   placeholder: "#B0B0B0",
   darkGreen: "#116149",
+  lightgreen: "#f5fffc",
   mainBackgroundColor: "#F9F9F9",
   xchangoColor: "#0B3B35",
   textbox: "#FFFFFF",
   textboxBorderColor: "#E5E7EB",
   welcomePageGray: "#8b949e",
   cardBg: "#DFDFDF",
+  statusbarBg: "#1a2a2a",
 };
 
 // Banner Images

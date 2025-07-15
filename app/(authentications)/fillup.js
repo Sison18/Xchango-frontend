@@ -9,24 +9,27 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Modal,
-  Alert,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { SafeAreaView } from "react-native-safe-area-context";
-import * as Location from "expo-location";
 import { router } from "expo-router";
+import * as Location from "expo-location";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import InputField from "../../components/textField/inputField";
 import { COLORS } from "../../assets/constants/theme";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const FillUpScreen = () => {
+  const headerHeight = useHeaderHeight();
   const [date, setDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [address, setAddress] = useState({
     street: "",
     city: "",
     region: "",
+    barangay: "",
     postalCode: "",
   });
 
@@ -36,55 +39,73 @@ const FillUpScreen = () => {
   };
 
   const handleLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission Denied", "Location access is required.");
-      return;
-    }
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission Denied", "Location access is required.");
+        return;
+      }
 
-    const location = await Location.getCurrentPositionAsync({});
-    const geo = await Location.reverseGeocodeAsync(location.coords);
+      const location = await Location.getCurrentPositionAsync({});
+      if (!location?.coords) {
+        Alert.alert("Error", "Unable to fetch coordinates.");
+        return;
+      }
 
-    if (geo.length > 0) {
-      const info = geo[0];
-      setAddress({
-        street: info.street || "",
-        city: info.city || "",
-        region: info.region || "",
-        postalCode: info.postalCode || "",
-      });
+      const geo = await Location.reverseGeocodeAsync(location.coords);
+      if (geo.length > 0) {
+        const info = geo[0];
+        setAddress({
+          street: info.street || "",
+          city: info.city || "",
+          region: info.region || "",
+          barangay: info.subdistrict || info.barangay || "",
+          postalCode: info.postalCode || "",
+        });
+      } else {
+        Alert.alert("Location Error", "Could not retrieve address details.");
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error", "Failed to get location. Please try again.");
     }
   };
 
   return (
-    <SafeAreaView>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : -40}
+        style={styles.keyboardAvoiding}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* PARENT SCROLL CONTAINER */}
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}
-          >
-            {/* TITLE */}
-            <Text style={styles.title}>Fill up</Text>
-            <Text style={styles.titleQuote}>
-              Let&apos;s get to know you better! Complete your details to get
-              started.
-            </Text>
+          <Text style={styles.title}>Fill up</Text>
+          <Text style={styles.titleQuote}>
+            Let&apos;s get to know you better! Complete your details to get
+            started.
+          </Text>
 
-            {/* INFORMATION -> ( FIRSTNAME, LASTNAME, PHONE_NUMBER ) */}
+          <Animated.View entering={FadeInDown.delay(100)}>
+            <Text style={styles.txtSection}>Fullname</Text>
             <InputField placeholder="First Name" {...inputProps} />
             <InputField placeholder="Last Name" {...inputProps} />
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(200)}>
+            <Text style={styles.txtSection}>Phone Number</Text>
             <InputField
-              placeholder="Phone Number"
+              placeholder="#"
               keyboardType="phone-pad"
               {...inputProps}
             />
+          </Animated.View>
 
-            {/* BIRTHDATE */}
+          <Animated.View entering={FadeInDown.delay(300)}>
+            <Text style={styles.txtSection}>Date of birth</Text>
             <Pressable
               style={styles.datePicker}
               onPress={() => setShowPicker(true)}
@@ -95,14 +116,16 @@ const FillUpScreen = () => {
                 {date ? date.toLocaleDateString() : "Birth Date"}
               </Text>
             </Pressable>
+          </Animated.View>
 
-            {/* ADDRESS */}
-            <Text style={styles.addressText}>Address</Text>
+          <Text style={styles.txtSection}>Address</Text>
+
+          <Animated.View entering={FadeInDown.delay(400)}>
             <InputField
-              placeholder="Street"
-              value={address.street}
+              placeholder="Region or Province"
+              value={address.region}
               onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, street: text }))
+                setAddress((prev) => ({ ...prev, region: text }))
               }
               {...inputProps}
             />
@@ -115,85 +138,83 @@ const FillUpScreen = () => {
               {...inputProps}
             />
             <InputField
-              placeholder="Region / Province"
-              value={address.region}
+              placeholder="Barangay"
+              value={address.barangay}
               onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, region: text }))
+                setAddress((prev) => ({ ...prev, barangay: text }))
+              }
+              {...inputProps}
+            />
+            <InputField
+              placeholder="Street"
+              value={address.street}
+              onChangeText={(text) =>
+                setAddress((prev) => ({ ...prev, street: text }))
               }
               {...inputProps}
             />
             <InputField
               placeholder="Postal Code"
-              value={address.postalCode}
               keyboardType="number-pad"
+              value={address.postalCode}
               onChangeText={(text) =>
                 setAddress((prev) => ({ ...prev, postalCode: text }))
               }
               {...inputProps}
             />
+          </Animated.View>
 
-            {/* AUTOMATIC LOCATION BUTTON */}
-            <TouchableOpacity
-              style={styles.locationBtn}
-              onPress={handleLocation}
-            >
-              <Text style={styles.locationBtnText}>🗺️ Use My Location</Text>
-            </TouchableOpacity>
-            {/* NOTE CONTAINER */}
-            <View style={styles.noteContainer}>
-              <Text style={styles.noteText}>
-                📌 *Note: &quot;Use My Location&quot; helps autofill your
-                address, but it may not always be accurate or complete.
-              </Text>
-            </View>
+          <TouchableOpacity style={styles.locationBtn} onPress={handleLocation}>
+            <Text style={styles.locationBtnText}>🗺️ Use My Location</Text>
+          </TouchableOpacity>
 
-            {/* ANDROID DATE */}
-            {showPicker && Platform.OS === "android" && (
-              <DateTimePicker
-                value={date || new Date()}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-              />
-            )}
+          <View style={styles.noteContainer}>
+            <Text style={styles.noteText}>
+              📌 *Note: &quot;Use My Location&quot; helps autofill your address,
+              but it may not always be accurate or complete.
+            </Text>
+          </View>
 
-            {/* IOS DATE */}
-            {Platform.OS === "ios" && showPicker && (
-              <Modal transparent animationType="fade">
-                <View style={styles.modalContainer}>
-                  <View style={styles.pickerWrapper}>
-                    <DateTimePicker
-                      value={date || new Date()}
-                      mode="date"
-                      display="spinner"
-                      onChange={handleDateChange}
-                      themeVariant="light"
-                    />
-                    <Pressable
-                      style={styles.IOSdoneButton}
-                      onPress={() => setShowPicker(false)}
-                    >
-                      <Text style={styles.IOSdoneButtonText}>Done</Text>
-                    </Pressable>
-                  </View>
+          {/* Date Pickers */}
+          {showPicker && Platform.OS === "android" && (
+            <DateTimePicker
+              value={date || new Date()}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
+          {showPicker && Platform.OS === "ios" && (
+            <Modal transparent animationType="fade">
+              <View style={styles.modalContainer}>
+                <View style={styles.pickerWrapper}>
+                  <DateTimePicker
+                    value={date || new Date()}
+                    mode="date"
+                    display="spinner"
+                    onChange={handleDateChange}
+                    themeVariant="light"
+                  />
+                  <Pressable
+                    style={styles.IOSdoneButton}
+                    onPress={() => setShowPicker(false)}
+                  >
+                    <Text style={styles.IOSdoneButtonText}>Done</Text>
+                  </Pressable>
                 </View>
-              </Modal>
-            )}
+              </View>
+            </Modal>
+          )}
 
-            {/* DONE BUTTON */}
-            <Pressable
-              style={({ pressed }) => [
-                styles.doneBtn,
-                pressed && styles.btnPressed,
-              ]}
-              onPress={() => router.push("./successfulSignup")}
-            >
-              <Text style={styles.btnText}>Done</Text>
-            </Pressable>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+          <TouchableOpacity
+            style={styles.doneBtn}
+            onPress={() => router.push("./successfulSignup")}
+          >
+            <Text style={styles.btnText}>Done</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -205,29 +226,37 @@ const inputProps = {
 };
 
 const styles = StyleSheet.create({
-  // PARENT SCROLL CONTAINER
+  keyboardAvoiding: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? 40 : 20,
+  },
   scrollContainer: {
     paddingHorizontal: 35,
-    paddingVertical: 50,
-    backgroundColor: COLORS.mainBackgroundColor,
+    paddingBottom: 70,
   },
-
-  // TITLE AND QUOTE
   title: {
     fontSize: 26,
     fontWeight: "700",
     letterSpacing: 1.2,
     color: COLORS.darkGreen,
     textAlign: "center",
+    marginTop: 20,
   },
   titleQuote: {
     color: COLORS.secondary,
     fontSize: 14,
     textAlign: "center",
-    marginBottom: 50,
+    marginBottom: 20,
+    marginTop: 10,
   },
-
-  // BIRTHDATE
+  txtSection: {
+    fontSize: 13,
+    fontWeight: "bold",
+    marginLeft: 3,
+    marginBottom: 5,
+    color: COLORS.primary,
+    marginTop: 20,
+  },
   datePicker: {
     borderWidth: 1,
     borderColor: COLORS.textboxBorderColor,
@@ -244,15 +273,6 @@ const styles = StyleSheet.create({
     color: COLORS.placeholder,
     fontSize: 14,
   },
-
-  // ADDRESS
-  addressText: {
-    fontSize: 14,
-    fontWeight: "700",
-    marginLeft: 3,
-  },
-
-  // AUTOMATIC LOCATION BUTTON
   locationBtn: {
     backgroundColor: "#e6f4ea",
     padding: 12,
@@ -263,16 +283,12 @@ const styles = StyleSheet.create({
     color: COLORS.darkGreen,
     fontWeight: "600",
   },
-
-  // NOTE CONTAINER
   noteContainer: {
     backgroundColor: "#fef9e7",
     borderLeftWidth: 4,
     borderLeftColor: "#f1c40f",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    padding: 12,
     marginTop: 10,
-    marginBottom: 20,
     borderRadius: 8,
   },
   noteText: {
@@ -281,8 +297,6 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     lineHeight: 18,
   },
-
-  // IOS DATE
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
@@ -307,17 +321,12 @@ const styles = StyleSheet.create({
     color: COLORS.mainBackgroundColor,
     fontWeight: "600",
   },
-
-  // DONE BUTTON
   doneBtn: {
     backgroundColor: COLORS.darkGreen,
     padding: 16,
     borderRadius: 15,
     alignItems: "center",
-  },
-  btnPressed: {
-    transform: [{ scale: 0.95 }],
-    backgroundColor: "darkgray",
+    marginTop: 30,
   },
   btnText: {
     color: COLORS.mainBackgroundColor,

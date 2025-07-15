@@ -7,23 +7,23 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ScrollView,
+  Modal,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
-  StatusBar,
-  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../assets/constants/theme";
 import InputField from "../../components/textField/inputField";
-import CustomPicker from "../../components/trade/add-item/CustomPicker";
-import { SafeAreaView } from "react-native-safe-area-context";
+import CustomPicker from "../../components/CustomPicker";
 import { router } from "expo-router";
 import axios from "axios";
-import useBackConfirmation from "../../components/reusable components/cancelConfirmation";
+import useBackConfirmation from "../../hooks/cancelConfirmation";
+import { StatusBar } from "expo-status-bar";
+import HeaderBar from "../../components/header";
 
 export default function ProductForm() {
   const [name, setName] = useState("");
@@ -34,6 +34,7 @@ export default function ProductForm() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [product, setProduct] = useState(null);
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
     getProductsDetails();
@@ -42,7 +43,16 @@ export default function ProductForm() {
   const getProductsDetails = async () => {
     try {
       const response = await axios.get("http://192.168.100.10:5000/products");
-      if (response.data.length > 0) setProduct(response.data[0]);
+      if (response.data.length > 0) {
+        const firstProduct = response.data[0];
+        setProduct(firstProduct);
+        const address = firstProduct.address?.[0];
+        if (address) {
+          setLocation(
+            `${address.street}, ${address.barangay}, ${address.city}, ${address.regionProvince}, ${address.postalCode}`
+          );
+        }
+      }
     } catch (error) {
       console.error("Error fetching product:", error.message);
     }
@@ -54,7 +64,6 @@ export default function ProductForm() {
       allowsMultipleSelection: true,
       selectionLimit: 0,
       quality: 1,
-      allowsEditing: false,
     });
 
     if (!result.canceled) {
@@ -80,6 +89,8 @@ export default function ProductForm() {
       Alert.alert("Missing Info", "Please complete all fields.");
       return;
     }
+
+    // Proceed with post logic here
   };
 
   const openImagePreview = (uri) => {
@@ -95,29 +106,30 @@ export default function ProductForm() {
   useBackConfirmation("Are you sure you want to cancel this post?");
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-      <StatusBar
-        barStyle="dark-content"
-        translucent
-        backgroundColor="transparent"
-      />
-      <Text style={styles.sectionTitle}>Donate an Item</Text>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <>
+      <StatusBar style="light" translucent />
+      <HeaderBar title="Donate Item" />
+
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoiding}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -40}
+        >
           <ScrollView
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContainer}
           >
             <View style={styles.contentContainer}>
-              <Text style={styles.inputLabel}>Image</Text>
+              {/* IMAGE SECTION */}
+              <Text style={styles.imgLabel}>Image</Text>
               <View style={styles.imageBox}>
                 {imageUris.length > 0 ? (
                   <>
                     <ScrollView
                       horizontal
-                      showsHorizontalScrollIndicator
+                      showsHorizontalScrollIndicator={false}
                       contentContainerStyle={styles.imageScrollContainer}
                     >
                       {imageUris.map((uri, index) => (
@@ -169,26 +181,29 @@ export default function ProductForm() {
                 )}
               </View>
 
+              {/* ITEM NAME */}
               <Text style={styles.inputLabel}>Item Name</Text>
               <InputField
                 placeholder="Name of Item"
-                placeholderTextColor={COLORS.placeholder}
-                onChangeText={setName}
                 value={name}
-                inputStyle={styles.itemDescriptionStyle}
+                onChangeText={setName}
+                inputStyle={styles.itemNameDescription}
+                placeholderTextColor={COLORS.placeholder}
               />
 
+              {/* DESCRIPTION */}
               <Text style={styles.inputLabel}>Description</Text>
               <InputField
                 placeholder="Describe the item"
-                placeholderTextColor={COLORS.placeholder}
-                onChangeText={setDescription}
                 value={description}
-                inputStyle={styles.itemDescriptionStyle}
-                multiline={true}
+                onChangeText={setDescription}
+                multiline
                 numberOfLines={2}
+                inputStyle={styles.itemNameDescription}
+                placeholderTextColor={COLORS.placeholder}
               />
 
+              {/* RECEIVER PREFERENCE */}
               <Text style={styles.inputLabel}>Receiver Preference</Text>
               <CustomPicker
                 placeholder="Select preference"
@@ -213,6 +228,7 @@ export default function ProductForm() {
                 ]}
               />
 
+              {/* ITEM CONDITION */}
               <Text style={styles.conditionInputLabel}>Condition</Text>
               <CustomPicker
                 placeholder="Select item status"
@@ -228,37 +244,43 @@ export default function ProductForm() {
                 ]}
               />
 
+              {/* LOCATION */}
               <Text style={styles.locationInputLabel}>Location</Text>
-              <Text style={styles.location}>
-                {product?.address?.[0]
-                  ? `${product.address[0].street}, ${product.address[0].barangay}, ${product.address[0].city}, ${product.address[0].postalCode}`
-                  : "Location not available"}
-              </Text>
+              <InputField
+                value={location}
+                onChangeText={setLocation}
+                placeholder="Enter location"
+                multiline
+                inputStyle={styles.itemNameDescription}
+              />
 
-              <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
-                <Text style={styles.postButtonText}>POST</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => {
-                  Alert.alert(
-                    "Cancel confirmation",
-                    "Are you sure you want to cancel this donation?",
-                    [
-                      { text: "No", style: "cancel" },
-                      { text: "Yes", onPress: () => router.back() },
-                    ]
-                  );
-                }}
-              >
-                <Text style={styles.postButtonText}>CANCEL</Text>
-              </TouchableOpacity>
+              {/* BUTTONS */}
+              <View style={styles.postCancelContainer}>
+                <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
+                  <Text style={styles.postButtonText}>POST</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={() =>
+                    Alert.alert(
+                      "Cancel confirmation",
+                      "Are you sure you want to cancel this donation?",
+                      [
+                        { text: "No", style: "cancel" },
+                        { text: "Yes", onPress: () => router.back() },
+                      ]
+                    )
+                  }
+                >
+                  <Text style={styles.postButtonText}>CANCEL</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
 
+      {/* IMAGE PREVIEW MODAL */}
       <Modal visible={previewVisible} transparent animationType="fade">
         <Pressable style={styles.modalOverlay} onPress={closeImagePreview}>
           <Image
@@ -268,31 +290,27 @@ export default function ProductForm() {
           />
         </Pressable>
       </Modal>
-    </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  // PARENT CONTAINER
+  scrollContainer: {
+    paddingBottom: 50,
+    paddingHorizontal: 35,
+  },
+  keyboardAvoiding: {
     flex: 1,
-    backgroundColor: COLORS.mainBackgroundColor,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: COLORS.primary,
-    marginBottom: 10,
-    marginTop: 10,
-    marginLeft: 20,
-  },
-  scrollContent: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 80,
-    paddingHorizontal: 30,
-  },
-  contentContainer: {
-    width: "100%",
+
+  // IMAGE
+  imgLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 3,
+    color: COLORS.darkGreen,
+    paddingTop: 20,
   },
   imageBox: {
     borderWidth: 1,
@@ -338,7 +356,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
-  itemDescriptionStyle: {
+  // INPUT LABEL AND STYLE
+  itemNameDescription: {
     borderColor: COLORS.placeholder,
     width: "100%",
     fontSize: 14,
@@ -373,12 +392,19 @@ const styles = StyleSheet.create({
     color: "#444",
     marginTop: 20,
   },
+
+  postCancelContainer: {
+    flexDirection: "row-reverse",
+    justifyContent: "center",
+    marginTop: 20,
+    gap: 15,
+  },
   postBtn: {
     backgroundColor: COLORS.darkGreen,
-    padding: 14,
+    width: "45%",
+    padding: 10,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 30,
   },
   postButtonText: {
     color: COLORS.mainBackgroundColor,
@@ -386,11 +412,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   cancelBtn: {
-    backgroundColor: COLORS.welcomePageGray,
-    padding: 14,
+    backgroundColor: COLORS.placeholder,
+    width: "45%",
+    padding: 10,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
   },
   imageIconTextContainer: {
     alignItems: "center",

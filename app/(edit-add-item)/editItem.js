@@ -1,7 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import EditContent from "../../components/trade/edit-item/edit";
 
 export default function EditItem() {
   const [product, setProduct] = useState(null);
@@ -20,11 +19,7 @@ export default function EditItem() {
     }
   };
 
-  return (
-    <View>
-      <EditContent products={product} />
-    </View>
-  );
+  return <View></View>;
 }
 
 const styles = StyleSheet.create({});

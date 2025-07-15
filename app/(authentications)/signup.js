@@ -93,14 +93,16 @@ const SignUpScreen = () => {
               />
               <Text style={styles.googleBtnText}>Sign up with Google</Text>
             </TouchableOpacity>
-          </View>
 
-          {/* SIGN IN LINK */}
-          <View style={styles.loginTextWrapper}>
-            <Text style={styles.loginText}>Already have an account? </Text>
-            <Link href="./login" asChild>
-              <Text style={styles.loginTextSpan}>Sign In</Text>
-            </Link>
+            <View>
+              {/* SIGN UP LINK */}
+              <Text style={styles.signupText}>
+                Already have an account?{" "}
+                <Link href="./login" asChild>
+                  <Text style={styles.signupTextSpan}>Sign In</Text>
+                </Link>
+              </Text>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
@@ -115,9 +117,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: "space-between",
+    justifyContent: "space-around",
   },
-
   // LOGO AND TITLE
   logoTitleContainer: {
     alignItems: "center",
@@ -133,7 +134,6 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     fontSize: 14,
   },
-
   // CREATE AN ACCOUNT BUTTON
   btn: {
     backgroundColor: COLORS.darkGreen,
@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     letterSpacing: 1,
   },
-
   // GOOGLE SIGNUP BUTTON
   googleBtn: {
     backgroundColor: "lightgray",
@@ -185,19 +184,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-
-  // SIGN IN LINK
-  loginTextWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: Platform.OS === "android" ? -5 : 20,
-  },
-  loginText: {
+  // SIGN UP LINK
+  signupText: {
+    marginTop: 10,
     fontSize: 14,
     color: COLORS.primary,
+    lineHeight: 24,
+    position: "relative",
+    textAlign: "center",
   },
-  loginTextSpan: {
+  signupTextSpan: {
     color: COLORS.darkGreen,
     fontWeight: "600",
   },

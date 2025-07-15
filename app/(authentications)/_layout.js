@@ -1,21 +1,19 @@
-import { StatusBar, View } from "react-native";
+import { View } from "react-native";
 import { Stack } from "expo-router";
-import useDoubleBackExit from "../../components/reusable components/andoidUseDoubleBackExit";
+import { StatusBar } from "expo-status-bar";
+import useDoubleBackExit from "../../hooks/andoidUseDoubleBackExit";
 
 export default function AuthenticationsLayout() {
   useDoubleBackExit();
 
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar
-        barStyle="dark-content"
-        translucent
-        backgroundColor="transparent"
-      />
+      <StatusBar style="dark" translucent />
+
       <Stack
         screenOptions={{
-          gestureEnabled: false,
           headerShown: false,
+          gestureEnabled: false,
         }}
       />
     </View>

@@ -55,6 +55,7 @@ const SuccessfulSignup = () => {
 export default SuccessfulSignup;
 
 const styles = StyleSheet.create({
+  // PARENT CONTAINER
   container: {
     flex: 1,
     backgroundColor: COLORS.mainBackgroundColor,
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 30,
   },
-
   // TOP SECTION
   topSection: {
     flex: 1,
@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     paddingHorizontal: 10,
   },
-
   // GO BACK TO LOGIN BUTTON
   button: {
     backgroundColor: COLORS.darkGreen,
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: Platform.OS === "android" ? 20 : 15,
+    marginBottom: Platform.OS === "android" ? 40 : 15,
   },
   buttonText: {
     color: COLORS.mainBackgroundColor,

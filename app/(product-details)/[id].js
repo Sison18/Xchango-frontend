@@ -1,20 +1,38 @@
-import { FlatList, StatusBar, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { FlatList, Text, BackHandler } from "react-native";
 import axios from "axios";
-import ImageSlider from "../../components/product-details/ImageSlider";
-import Content from "../../components/product-details/Content";
-import BottomBar from "../../components/product-details/BottomBar";
-import BackShareButton from "../../components/product-details/BackShareButton";
+import ImageSlider from "../../screens/product-details/ImageSlider";
+import Content from "../../screens/product-details/Content";
+import BottomBar from "../../screens/product-details/BottomBar";
 import { COLORS } from "../../assets/constants/theme";
-import ProductsStyle from "../../components/home/products";
-import useDoubleBackExit from "../../components/reusable components/andoidUseDoubleBackExit";
+import Products from "../../screens/tabs/home/products";
+import useDoubleBackExit from "../../hooks/andoidUseDoubleBackExit";
+import React, { useEffect, useState, useCallback } from "react";
+import { useLocalSearchParams, router } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import BackShareButton from "../../screens/product-details/BackShareButton";
 
 export default function ProductsDetails() {
   const { id } = useLocalSearchParams();
   const [product, setProduct] = useState(null);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const onBackPress = () => {
+  //       router.replace("/home");
+  //       return true;
+  //     };
+
+  //     const subscription = BackHandler.addEventListener(
+  //       "hardwareBackPress",
+  //       onBackPress
+  //     );
+
+  //     return () => subscription.remove();
+  //   }, [])
+  // );
   useDoubleBackExit(false);
 
   useEffect(() => {
@@ -49,12 +67,8 @@ export default function ProductsDetails() {
   );
 
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-      />
+    <>
+      <StatusBar style="dark" translucent />
 
       <BackShareButton />
 
@@ -80,13 +94,13 @@ export default function ProductsDetails() {
               wishlist={product.wishlist}
             />
 
-            <ProductsStyle products={filteredSuggestions} />
+            <Products products={filteredSuggestions} />
           </>
         }
         showsVerticalScrollIndicator={false}
       />
 
       <BottomBar />
-    </View>
+    </>
   );
 }

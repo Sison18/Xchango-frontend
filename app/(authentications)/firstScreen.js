@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    marginBottom: 75,
+    marginBottom: Platform.OS === "android" ? 100 : 75,
     paddingHorizontal: 20,
   },
 

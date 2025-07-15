@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
-import TradeScreenTabs from "../../components/trade/tradeScreenTabs";
+import TradeScreenTabs from "../../screens/tabs/trade/tradeScreenTabs";
 import axios from "axios";
-import PostItem from "../../components/trade/postItem";
+import PostItem from "../../screens/tabs/trade/postItem";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../../assets/constants/theme";
+import { StatusBar } from "expo-status-bar";
 
 export default function TradeScreenWrapper() {
   const [products, setProducts] = useState(null);
@@ -30,10 +33,17 @@ export default function TradeScreenWrapper() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <TradeScreenTabs products={products} />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.darkGreen }}
+      edges={["top"]}
+    >
+      <StatusBar style="light" />
 
-      <PostItem />
-    </View>
+      <View style={{ flex: 1 }}>
+        <TradeScreenTabs products={products} />
+
+        <PostItem />
+      </View>
+    </SafeAreaView>
   );
 }

@@ -1,9 +1,12 @@
-import MessageScreenHeader from "../../components/message/messageScreenHeader";
-import ChatXChango from "../../components/message/chatXChango";
-import MessageContainer from "../../components/message/messagesContainer";
+import MessageScreenHeader from "../../screens/tabs/message/messageScreenHeader";
+import ChatXChango from "../../screens/tabs/message/chatXChango";
+import MessageContainer from "../../screens/tabs/message/messagesContainer";
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import axios from "axios";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../../assets/constants/theme";
+import { StatusBar } from "expo-status-bar";
 
 export default function MessageScreen() {
   const [products, setProducts] = useState(null);
@@ -32,11 +35,18 @@ export default function MessageScreen() {
 
   return (
     <>
-      <MessageScreenHeader />
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: COLORS.darkGreen }}
+        edges={["top"]}
+      >
+        <StatusBar style="light" />
+        <View style={{ flex: 1 }}>
+          <MessageScreenHeader />
+          <MessageContainer products={products} />
 
-      <MessageContainer products={products} />
-
-      <ChatXChango />
+          <ChatXChango />
+        </View>
+      </SafeAreaView>
     </>
   );
 }

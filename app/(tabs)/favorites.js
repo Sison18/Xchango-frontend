@@ -1,8 +1,11 @@
-import HomeScreenHeader from "../../components/favorites/favoritesScreenHeader";
-import FavoritesContent from "../../components/favorites/favoritesContent";
+import HomeScreenHeader from "../../screens/tabs/favorites/favoritesScreenHeader";
+import FavoritesContent from "../../screens/tabs/favorites/favoritesContent";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import FavoritesHeader from "../../components/favorites/favoritesHeader";
+import FavoritesHeader from "../../screens/tabs/favorites/favoritesHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../../assets/constants/theme";
+import { StatusBar } from "expo-status-bar";
 
 export default function FavoriteScreen() {
   const [product, setProduct] = useState(null);
@@ -22,11 +25,17 @@ export default function FavoriteScreen() {
   };
   return (
     <>
-      <HomeScreenHeader />
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: COLORS.darkGreen }}
+        edges={["top"]}
+      >
+        <StatusBar style="light" />
+        <HomeScreenHeader />
 
-      <FavoritesHeader />
+        <FavoritesHeader />
 
-      <FavoritesContent products={product} />
+        <FavoritesContent products={product} />
+      </SafeAreaView>
     </>
   );
 }
