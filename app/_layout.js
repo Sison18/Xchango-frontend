@@ -20,7 +20,7 @@ export default function RootLayout() {
 
         {/* ALL BOTTOM TABS */}
         <Stack.Screen
-          name="(tabs)"
+          name="(main-screens)"
           options={{
             gestureEnabled: false,
           }}
@@ -42,7 +42,7 @@ export default function RootLayout() {
 
         {/* REQUEST TRADE */}
         <Stack.Screen
-          name="(product-details)/(requestTrade-report)/requestTrade"
+          name="(product-details)/(request)/requestTrade"
           options={{
             gestureEnabled: false,
           }}

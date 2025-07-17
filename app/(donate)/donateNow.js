@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 3,
-    color: COLORS.darkGreen,
+    color: COLORS.primary,
     paddingTop: 20,
   },
   imageBox: {

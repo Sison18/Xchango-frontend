@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.primary,
     marginRight: 10,
+    width: "85%",
   },
   faqAnswerBox: {
     backgroundColor: COLORS.lightgreen,

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { COLORS } from "../../assets/constants/theme";
 import Line from "../../assets/constants/line";
+import { router } from "expo-router";
 
 export default function Content({
   title,
@@ -13,6 +14,7 @@ export default function Content({
   name,
   rating,
   wishlist,
+  user,
 }) {
   const [expanded, setExpanded] = useState(false);
   const [expanded2, setExpanded2] = useState(false);
@@ -51,7 +53,14 @@ export default function Content({
       {/* OTHER INFORMATION------------------------------------------------- */}
       <View style={styles.otherContainer}>
         {/* PROFILE & NAME & RATING */}
-        <TouchableOpacity style={styles.profileNameRating}>
+        <TouchableOpacity
+          style={styles.profileNameRating}
+          onPress={() => {
+            if (user && user.id) {
+              router.push(`/(user-profile)/${user.id}`);
+            }
+          }}
+        >
           {/* PROFILE */}
           <Image source={{ uri: profile }} style={styles.profileImg} />
           {/* USERNAME & RATING */}

@@ -44,11 +44,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
     paddingHorizontal: 20,
     paddingBottom: 15,
     paddingTop: 10,
     gap: 10,
+    backgroundColor: COLORS.lightgreen,
   },
 
   // XCHANGO TITLE

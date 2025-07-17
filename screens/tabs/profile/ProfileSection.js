@@ -1,13 +1,14 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../../assets/constants/theme";
+import { router } from "expo-router";
 
 export default function ProfileSection({ userOne }) {
   return (
     <View style={styles.container}>
       {/* PROFILE CONTAINER WITH GRADIENT */}
       <LinearGradient
-        colors={["#1a2a2a", "#0b5345", "#000000"]}
+        colors={[COLORS.statusbarBg, "#0b5345", "#000000"]}
         style={styles.profileContainer}
       >
         {/* PROFILE IMAGE */}
@@ -16,10 +17,14 @@ export default function ProfileSection({ userOne }) {
           {/* FULL NAME */}
           <Text style={styles.profileName}>{userOne.userName}</Text>
           {/* VERIFIED */}
-          <Image source={require("../../../assets/images/verified.png")} />
+          {userOne.verification && (
+            <Image source={require("../../../assets/images/verified.png")} />
+          )}
         </View>
         {/* RATING */}
-        <Text style={styles.rating}>⭐ {userOne.rating.toFixed(1)}</Text>
+        <TouchableOpacity onPress={() => router.push("/reviews")}>
+          <Text style={styles.rating}>⭐ {userOne.rating.toFixed(1)}</Text>
+        </TouchableOpacity>
       </LinearGradient>
     </View>
   );

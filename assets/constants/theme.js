@@ -12,6 +12,7 @@ export const COLORS = {
   welcomePageGray: "#8b949e",
   cardBg: "#DFDFDF",
   statusbarBg: "#1a2a2a",
+  rating: "#FCD34D",
 };
 
 // Banner Images

@@ -72,6 +72,7 @@ export default function ChangePasswordScreen() {
         <KeyboardAvoidingView
           style={styles.container}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -40}
         >
           <ScrollView
             contentContainerStyle={styles.scrollContent}
@@ -137,10 +138,6 @@ export default function ChangePasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.mainBackgroundColor,
-  },
   container: {
     flex: 1,
     backgroundColor: COLORS.mainBackgroundColor,

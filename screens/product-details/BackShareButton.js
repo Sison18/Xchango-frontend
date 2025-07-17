@@ -16,7 +16,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { COLORS } from "../../assets/constants/theme";
 
-export default function BackShareButton() {
+export default function BackShareButton({ product }) {
   const [showOptions, setShowOptions] = useState(false);
 
   const handleShare = async () => {
@@ -87,10 +87,13 @@ export default function BackShareButton() {
               </View>
             </TouchableOpacity>
             {/* REPORT */}
+
             <TouchableOpacity
               onPress={() => {
                 setShowOptions(false);
-                router.push("/reportItem");
+                if (product && product.id) {
+                  router.push(`/(report-item)/${product.id}`);
+                }
               }}
             >
               <View style={styles.rowContainer}>

@@ -86,14 +86,6 @@ export default function ProductList({ status }) {
 
   return (
     <View>
-      {/* NOTE MESSAGE */}
-      <View style={styles.verificationNote}>
-        <Text style={styles.verificationText}>
-          Want to be trusted by other users? Verify your account to boost your
-          credibility and trade with confidence.
-        </Text>
-      </View>
-
       <FlatList
         data={status}
         keyExtractor={(_, index) => index.toString()}
@@ -102,6 +94,15 @@ export default function ProductList({ status }) {
         contentContainerStyle={{
           paddingBottom: Platform.OS === "ios" ? 130 : 200,
         }}
+        ListHeaderComponent={
+          // NOTE MESSAGE
+          <View style={styles.verificationNote}>
+            <Text style={styles.verificationText}>
+              Want to be trusted by other users? Verify your account to boost
+              your credibility and trade with confidence.
+            </Text>
+          </View>
+        }
       />
     </View>
   );

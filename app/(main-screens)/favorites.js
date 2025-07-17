@@ -1,14 +1,22 @@
 import HomeScreenHeader from "../../screens/tabs/favorites/favoritesScreenHeader";
 import FavoritesContent from "../../screens/tabs/favorites/favoritesContent";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import FavoritesHeader from "../../screens/tabs/favorites/favoritesHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../assets/constants/theme";
 import { StatusBar } from "expo-status-bar";
+import { ActivityIndicator, View } from "react-native";
 
 export default function FavoriteScreen() {
   const [product, setProduct] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getProductsDetails();
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     getProductsDetails();
@@ -23,6 +31,15 @@ export default function FavoriteScreen() {
       console.error("Error fetching product:", error.message);
     }
   };
+
+  if (!product) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
+      </View>
+    );
+  }
+
   return (
     <>
       <SafeAreaView
@@ -34,7 +51,11 @@ export default function FavoriteScreen() {
 
         <FavoritesHeader />
 
-        <FavoritesContent products={product} />
+        <FavoritesContent
+          products={product}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
       </SafeAreaView>
     </>
   );

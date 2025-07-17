@@ -1,5 +1,5 @@
 import MessageScreenHeader from "../../screens/tabs/message/messageScreenHeader";
-import ChatXChango from "../../screens/tabs/message/chatXChango";
+import ChatXChango from "../../components/chatXChango";
 import MessageContainer from "../../screens/tabs/message/messagesContainer";
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
@@ -28,7 +28,7 @@ export default function MessageScreen() {
   if (!products) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
       </View>
     );
   }
@@ -44,7 +44,9 @@ export default function MessageScreen() {
           <MessageScreenHeader />
           <MessageContainer products={products} />
 
-          <ChatXChango />
+          <ChatXChango
+            positionStyle={{ position: "absolute", bottom: 15, right: 25 }}
+          />
         </View>
       </SafeAreaView>
     </>

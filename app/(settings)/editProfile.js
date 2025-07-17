@@ -10,6 +10,7 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  Alert,
 } from "react-native";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -20,6 +21,7 @@ import { COLORS } from "../../assets/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import HeaderBar from "../../components/header";
 import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
 
 export default function EditProfileScreen() {
   const [form, setForm] = useState({
@@ -91,7 +93,29 @@ export default function EditProfileScreen() {
   return (
     <>
       <StatusBar style="light" translucent />
-      <HeaderBar title="Edit Profile" confirmBack={false} />
+      <HeaderBar
+        title="Edit Profile"
+        confirmBack={false}
+        rightComponent={
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                "Confirm Save",
+                "Are you sure you want to save your changes?",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Save",
+                    onPress: () => router.push("/profile"),
+                  },
+                ]
+              )
+            }
+          >
+            <Text style={{ color: "#fff", fontWeight: "600" }}>Save</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <View style={styles.container}>
         <KeyboardAvoidingView
@@ -258,20 +282,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: COLORS.primary,
   },
-  header: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f1f1f1",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
+
   scrollContainer: {
     padding: 20,
+    paddingBottom: 100,
   },
   profileImageContainer: {
     alignItems: "center",

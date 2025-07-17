@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Alert,
   Platform,
+  View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -17,6 +18,7 @@ export default function HeaderBar({
   showBack = true,
   confirmBack = true,
   message = "Are you sure you want to cancel?",
+  rightComponent,
 }) {
   const handleBackPress = () => {
     if (confirmBack) {
@@ -50,6 +52,10 @@ export default function HeaderBar({
       >
         {title}
       </Text>
+
+      {rightComponent && (
+        <View style={styles.rightContainer}>{rightComponent}</View>
+      )}
     </LinearGradient>
   );
 }
@@ -73,5 +79,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
     textAlign: "left",
+  },
+  rightContainer: {
+    marginLeft: "auto",
   },
 });

@@ -51,17 +51,13 @@ export default function BottomBar() {
 const styles = StyleSheet.create({
   // BOTTOM BAR CONTAINER
   bottomBarContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
     flexDirection: "row",
     alignItems: "center",
     borderTopWidth: 1,
     borderColor: COLORS.textboxBorderColor,
     backgroundColor: "white",
-    paddingTop: 15,
-    paddingBottom: Platform.OS === "android" ? 50 : 15,
+    paddingTop: Platform.OS === "android" ? 10 : 15,
+    paddingBottom: Platform.OS === "android" ? 10 : 15,
     paddingHorizontal: 15,
     justifyContent: "space-around",
     zIndex: 10,

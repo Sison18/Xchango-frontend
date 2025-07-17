@@ -27,14 +27,26 @@ export default function DonationSection() {
         entering={FadeInDown.delay(300).duration(400)}
         style={styles.bottomButtons}
       >
-        <TouchableOpacity style={styles.smallButton}>
-          <Text style={styles.smallButtonText}>Your Donation</Text>
+        {/* UNITEDFEED */}
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={() => router.push("/unitedfeed")}
+        >
+          <Text style={styles.smallButtonText}>UnitedFeed</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.smallButton}>
+        {/* LEADERBOARDS */}
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={() => router.push("/leaderboards")}
+        >
           <Text style={styles.smallButtonText}>Leaderboards</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.smallButton}>
-          <Text style={styles.smallButtonText}>UnitedFeed</Text>
+        {/* DETAILS */}
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={() => router.push("/details")}
+        >
+          <Text style={styles.smallButtonText}>Your Donation</Text>
         </TouchableOpacity>
       </Animated.View>
 

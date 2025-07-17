@@ -2,8 +2,13 @@ import HomeScreenHeader from "../../screens/tabs/home/homeScreenHeader";
 import Banner from "../../screens/tabs/home/banner";
 import Categories from "../../screens/tabs/home/categories";
 import ProductsStyle from "../../screens/tabs/home/products";
-import { FlatList, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  View,
+  RefreshControl,
+} from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import useDoubleBackExit from "../../hooks/andoidUseDoubleBackExit";
 import { StatusBar } from "expo-status-bar";
@@ -12,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const [product, setProduct] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getProductsDetails();
@@ -27,7 +33,21 @@ export default function HomeScreen() {
     }
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getProductsDetails(); // Re-fetch data
+    setRefreshing(false);
+  }, []);
+
   useDoubleBackExit();
+
+  if (!product) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -39,6 +59,7 @@ export default function HomeScreen() {
         <HomeScreenHeader />
 
         <FlatList
+          data={[]}
           renderItem={() => null}
           ListHeaderComponent={
             <>
@@ -48,6 +69,14 @@ export default function HomeScreen() {
             </>
           }
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[COLORS.darkGreen]}
+              tintColor={COLORS.darkGreen}
+            />
+          }
         />
       </View>
     </SafeAreaView>

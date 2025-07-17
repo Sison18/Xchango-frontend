@@ -31,12 +31,11 @@ const products = [
     ],
     category: "electronics",
     condition: "Used",
-    location: "Quezon City",
+    location: "Manila City",
     estimatedPrice: "₱10,000",
     userId: "u01",
     userName: "Christian mark Sison",
-    profile:
-      "https://scontent.fmnl17-4.fna.fbcdn.net/v/t39.30808-6/510731823_1912849806132300_8659332937727609290_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFUfUf3PEN-3fDU3LPIPfSxjeL_6ilqnvCN4v_qKWqe8GnW2KEENNR7byaZjjl3tx0n-YJMhrRPvR4bwNgL-lDY&_nc_ohc=R1MzNaBSO9gQ7kNvwHkzLu0&_nc_oc=AdmJz6JXla2-8VAfNAPUrz9Q_I8DrMJ-vbpOjJjBMT7yuJdqgTbBiH8C6ixcjbx_veg&_nc_zt=23&_nc_ht=scontent.fmnl17-4.fna&_nc_gid=SVxPH5QY-hhuIsXgMKn8lg&oh=00_AfTiIoDunNDDa08vqwCyaOuStNrCNxqhSst7B2pUFp7-dw&oe=68758955",
+    profile: "https://randomuser.me/api/portraits/men/32.jpg",
     firstname: "Christian mark",
     lastname: "Sison",
     phoneNumber: "09948721614",
@@ -51,7 +50,7 @@ const products = [
       },
     ],
     rating: 4.9,
-    status: "Available",
+    status: "Pending Trade",
     wishlist: [
       "gaming console",
       "high-end Android",
@@ -66,9 +65,15 @@ const products = [
     ],
     latitude: 14.6514,
     longitude: 121.0492,
-    verification: false,
+    verification: true,
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
+    comment: "Maayos at mabilis ang palitan. Pareho kaming satisfied!",
+    commentImg:
+      "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+    status2: "In-Progress",
+    receiverPreference: "Children",
+    donationDescription: "Donation for children's education and welfare.",
   },
   {
     id: "p2",
@@ -86,13 +91,12 @@ const products = [
     ],
     category: "sports_outdoors",
     condition: "Like New",
-    location: "Taguig",
+    location: "Pasay",
     estimatedPrice: "₱6,000",
     userId: "u02",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/women/44.jpg",
     userName: "Christian mark Sison",
-    rating: 4,
+    rating: 2.5,
     status: "Available",
     wishlist: ["gaming console", "high-end Android", "tablet"],
     latitude: 14.5547,
@@ -100,6 +104,22 @@ const products = [
     verification: false,
     message: "G na ba?",
     time: "16 min",
+    comment:
+      "Hindi ko inakala na may gusto palang makipagpalit ng lumang bike ko. Sulit!",
+    commentImg:
+      "https://img.freepik.com/free-vector/payment-success-illustration_23-2148574227.jpg",
+    status2: "Donated",
+    receiverPreference: "Elderly",
+    donationDescription: "Donation to support elderly care and services.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Pasay City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p3",
@@ -123,7 +143,7 @@ const products = [
     profile:
       "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     userName: "Christian Sison",
-    rating: 4,
+    rating: 3.1,
     status: "Available",
     wishlist: ["gaming console", "high-end Android", "tablet"],
     latitude: 14.5243,
@@ -131,6 +151,21 @@ const products = [
     verification: false,
     message: "Sa BGC nalang tayo meet up",
     time: "16 min",
+    comment: "Medyo matagal lang ang usapan, pero naging okay din ang kapalit.",
+    commentImg:
+      "https://img.freepik.com/free-vector/transaction-complete-concept-illustration_114360-4865.jpg",
+    status2: "In-Progress",
+    receiverPreference: "Students",
+    donationDescription: "Funds for student scholarships and school supplies.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Pasig City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p4",
@@ -151,10 +186,9 @@ const products = [
     location: "Makati",
     estimatedPrice: "₱8,500",
     userId: "u04",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/men/71.jpg",
     userName: "Christian mark Sison",
-    rating: 4,
+    rating: 1.9,
     status: "Available",
     wishlist: ["gaming console", "high-end Android", "tablet"],
     latitude: 14.5764,
@@ -162,6 +196,22 @@ const products = [
     verification: false,
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
+    comment:
+      "Napakaganda ng konsepto ng barter. Nung una, nag-aalangan ako, pero nung natuloy ang palitan ng lumang cellphone kapalit ng oven, pareho kaming natuwa. Walang cash involved, pero pareho kaming panalo.",
+    commentImg:
+      "https://img.freepik.com/free-vector/invoice-paid-concept-illustration_114360-7940.jpg",
+    status2: "In-Progress",
+    receiverPreference: "Families in need",
+    donationDescription: "Assistance for low-income families.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Makati City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p5",
@@ -182,10 +232,9 @@ const products = [
     location: "Marikina",
     estimatedPrice: "₱3,000",
     userId: "u05",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/women/68.jpg",
     userName: "Christian mark Sison",
-    rating: 4,
+    rating: 3.2,
     status: "Available",
     wishlist: ["gaming console", "high-end Android", "tablet"],
     latitude: 14.6042,
@@ -193,6 +242,22 @@ const products = [
     verification: false,
     message: "Good na good pa condition neto",
     time: "16 min",
+    comment:
+      "Nakakatuwa kasi bukod sa pagtipid, nakakatulong din sa kapwa. Nung pandemic, naging malaking bagay ang barter para makuha ko ang basic needs nang hindi na kailangan gumastos.",
+    commentImg:
+      "https://img.freepik.com/free-vector/mobile-payment-illustration_23-2148590526.jpg",
+    status2: "In-Progress",
+    receiverPreference: "Homeless",
+    donationDescription: "Support for homeless shelters and food.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Marikina City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p6",
@@ -213,8 +278,7 @@ const products = [
     location: "San Juan",
     estimatedPrice: "₱900",
     userId: "u06",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/men/1.jpg",
     userName: "Christian mark Sison",
     rating: 4,
     status: "Available",
@@ -224,6 +288,21 @@ const products = [
     verification: true,
     message: "Ano bro?",
     time: "16 min",
+    comment: "Medyo matagal lang ang usapan, pero naging okay din ang kapalit.",
+    commentImg:
+      "https://img.freepik.com/free-vector/order-confirmed-concept-illustration_114360-5162.jpg",
+    status2: "Cancelled",
+    receiverPreference: "Victims of Calamities",
+    donationDescription: "Relief funds for victims of natural disasters.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "San Juan City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p7",
@@ -244,8 +323,7 @@ const products = [
     location: "Manila",
     estimatedPrice: "₱1,500",
     userId: "u07",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/men/10.jpg",
     userName: "Christian mark Sison",
     rating: 4,
     status: "Available",
@@ -255,6 +333,22 @@ const products = [
     verification: true,
     message: "Meet up nalang tayo",
     time: "16 min",
+    comment:
+      "Ginamit ko ang platform para ipagpalit ang lumang printer ko. Nakahanap ako ng estudyanteng nangangailangan at napalitan ito ng ilang school supplies para sa anak ko. Bukod sa practical, parang may sense of community rin.",
+    commentImg:
+      "https://img.freepik.com/free-vector/payment-success-illustration_23-2148574227.jpg",
+    status2: "Pending",
+    receiverPreference: "Orphanages",
+    donationDescription: "Donation to orphanages for children's welfare.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Manila City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p8",
@@ -275,10 +369,9 @@ const products = [
     location: "Mandaluyong",
     estimatedPrice: "₱2,800",
     userId: "u08",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/women/1.jpg",
     userName: "Christian mark Sison",
-    rating: 4,
+    rating: 2,
     status: "Available",
     wishlist: ["gaming console", "high-end Android", "tablet"],
     latitude: 14.5794,
@@ -286,6 +379,21 @@ const products = [
     verification: true,
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
+    comment: "Nagkapalitan kami ng gamit na walang labas na pera. Panalo!",
+    commentImg:
+      "https://img.freepik.com/free-vector/online-payment-concept-illustration_114360-489.jpg",
+    status2: "Donated",
+    receiverPreference: "Persons with disabilities (PWD)",
+    donationDescription: "Support and resources for people with disabilities.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Mandaluyong City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p9",
@@ -306,10 +414,9 @@ const products = [
     location: "Caloocan",
     estimatedPrice: "₱500",
     userId: "u09",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/women/10.jpg",
     userName: "andrei custudio",
-    rating: 4,
+    rating: 1,
     status: "Pending Trade",
     wishlist: ["helmet", "bike light", "GoPro"],
     latitude: 14.6595,
@@ -317,6 +424,21 @@ const products = [
     verification: true,
     message: "Di ko alam doon eh hahaha",
     time: "16 min",
+    comment: "Safe ang transaksyon at may tiwala sa kausap. Good job!",
+    commentImg:
+      "https://img.freepik.com/free-vector/payment-confirmation-concept-illustration_114360-7357.jpg",
+    status2: "Pending",
+    receiverPreference: "Anyone",
+    donationDescription: "Open donations for anyone in need.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Caloocan City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p10",
@@ -337,10 +459,9 @@ const products = [
     location: "Las Piñas",
     estimatedPrice: "₱850",
     userId: "u010",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/women/30.jpg",
     userName: "Bianca Sofia",
-    rating: 4,
+    rating: 1,
     status: "Pending Trade",
     wishlist: ["helmet", "bike light", "GoPro"],
     latitude: 14.45,
@@ -348,6 +469,22 @@ const products = [
     verification: true,
     message: "Ano gusto mo?",
     time: "16 min",
+    comment:
+      "Minsan may mga hindi seryoso—nangako na makikipagkita pero hindi sumipot. Mas okay sana kung may rating system para malaman kung sino ang trustworthy.",
+    commentImg:
+      "https://img.freepik.com/free-vector/contactless-payment-illustration_114360-5133.jpg",
+    status2: "Donated",
+    receiverPreference: "Low-income families",
+    donationDescription: "Support for families in financial distress.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Las Piñas City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
   {
     id: "p11",
@@ -368,10 +505,9 @@ const products = [
     location: "Valenzuela",
     estimatedPrice: "₱1,700",
     userId: "u011",
-    profile:
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    profile: "https://randomuser.me/api/portraits/men/90.jpg",
     userName: "shane agor",
-    rating: 4,
+    rating: 5,
     status: "Pending Trade",
     wishlist: ["helmet", "bike light", "GoPro"],
     latitude: 14.7,
@@ -379,6 +515,22 @@ const products = [
     verification: true,
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
+    comment:
+      "Medyo mahirap lang sa umpisa maghanap ng tamang kapalit. Pero kung patient ka, makakahanap ka rin ng willing makipagbarter. Sana lang mas maraming active users para mas mabilis ang match.",
+    commentImg:
+      "https://img.freepik.com/free-vector/online-banking-concept-illustration_114360-4892.jpg",
+    status2: "Cancelled",
+    receiverPreference: "Refugees",
+    donationDescription: "Donations for refugees and displaced persons.",
+    address: [
+      {
+        street: "15 Saint Mark Street",
+        barangay: "Central Signal Village",
+        city: "Valenzuela City",
+        regionProvince: "Metro Manila",
+        postalCode: 1637,
+      },
+    ],
   },
 ];
 

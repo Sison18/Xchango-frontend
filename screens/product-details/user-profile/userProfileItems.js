@@ -7,20 +7,20 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
-  RefreshControl,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS } from "../../../../XChangoProject/assets/constants/theme";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { router } from "expo-router";
 import React from "react";
+import Line from "../../../../XChangoProject/assets/constants/line";
 
-export default function FavoritesContent({ products, refreshing, onRefresh }) {
+export default function UserItem({ products }) {
   const renderItem = ({ item, index }) => (
     <>
-      {/* PRODUCT CARD */}
+      {/* PRODUCT CARDS */}
       <TouchableOpacity onPress={() => router.push(`/${item.id}`)}>
-        <Animated.View
+        <Animated.View // Card animation at
           entering={FadeInDown.delay(150 * index).duration(500)}
           style={styles.animatedWrapper}
         >
@@ -29,7 +29,7 @@ export default function FavoritesContent({ products, refreshing, onRefresh }) {
 
           {/* HEART BUTTON */}
           <TouchableOpacity style={styles.heart}>
-            <FontAwesome5 name="heart" size={16} color={COLORS.cardBg} />
+            <FontAwesome5 name="heart" size={16} color={COLORS.darkGreen} />
           </TouchableOpacity>
 
           <View style={styles.titleConditionLocationContainer}>
@@ -44,8 +44,8 @@ export default function FavoritesContent({ products, refreshing, onRefresh }) {
               </Text>
             </View>
 
-            <View style={styles.locationTransactionContainer}>
-              {/* LOCATION */}
+            <View style={styles.locationTradeContainer}>
+              {/* PRODUCT LOCATION */}
               <Text style={styles.locationText} numberOfLines={1}>
                 📍{item.location}
               </Text>
@@ -64,26 +64,15 @@ export default function FavoritesContent({ products, refreshing, onRefresh }) {
 
   return (
     <>
+      {/* PRODUCT CARDS */}
       <FlatList
         data={products}
         renderItem={renderItem}
         numColumns={2}
         showsVerticalScrollIndicator={false}
         style={styles.productsList}
-        contentContainerStyle={{
-          alignItems: "center",
-          paddingBottom: Platform.OS === "ios" ? 60 : 90,
-          backgroundColor: COLORS.mainBackgroundColor,
-        }}
+        contentContainerStyle={{ alignItems: "center", paddingBottom: 0 }}
         columnWrapperStyle={styles.columnWrapper}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[COLORS.darkGreen]} // Android
-            tintColor={COLORS.darkGreen} // iOS
-          />
-        }
       />
     </>
   );
@@ -94,7 +83,7 @@ const cardMargin = 8;
 const cardWidth = screenWidth / 2 - cardMargin * 2.5;
 
 const styles = StyleSheet.create({
-  // PRODUCTS CONTAINER
+  // PRODUCT CARDS
   productsList: {
     paddingBottom: Platform.OS === "android" ? 50 : 60,
   },
@@ -119,7 +108,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: COLORS.darkGreen,
+    backgroundColor: COLORS.mainBackgroundColor,
     padding: 5,
     borderRadius: 20,
     zIndex: 100,
@@ -152,7 +141,7 @@ const styles = StyleSheet.create({
   },
 
   // LOCATION & TRANSACTION CONTAINER
-  locationTransactionContainer: {
+  locationTradeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -168,6 +157,7 @@ const styles = StyleSheet.create({
     width: "55%",
     alignItems: "flex-end",
   },
+
   transactionText: {
     fontSize: 12,
     color: COLORS.secondary,

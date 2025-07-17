@@ -170,8 +170,12 @@ const FillUpScreen = () => {
 
           <View style={styles.noteContainer}>
             <Text style={styles.noteText}>
-              📌 *Note: &quot;Use My Location&quot; helps autofill your address,
-              but it may not always be accurate or complete.
+              📌 *Note: {"\n"}• &quot;Use My Location&quot; helps autofill your
+              address, but it may not always be accurate or complete.{"\n"}•
+              Make sure to double-check your location before submitting.{"\n"}•
+              If location fails, you can still manually enter your address.
+              {"\n"}• GPS accuracy may vary based on device, internet, or
+              environmental factors.
             </Text>
           </View>
 
@@ -233,6 +237,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 35,
     paddingBottom: 70,
+    flexGrow: 1,
   },
   title: {
     fontSize: 26,

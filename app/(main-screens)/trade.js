@@ -27,7 +27,7 @@ export default function TradeScreenWrapper() {
   if (!products) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
       </View>
     );
   }

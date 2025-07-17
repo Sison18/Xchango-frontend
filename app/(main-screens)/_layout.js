@@ -7,7 +7,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as Animatable from "react-native-animatable";
 
-export default function TabsLayout() {
+export default function MainScreenLayout() {
   return (
     <>
       <Tabs
@@ -18,11 +18,9 @@ export default function TabsLayout() {
           tabBarShowLabel: true,
           tabBarHideOnKeyboard: true,
           tabBarStyle: {
-            backgroundColor: "white",
+            backgroundColor: COLORS.lightgreen,
             paddingHorizontal: 10,
             marginBottom: Platform.OS === "android" ? 5 : 10,
-            borderTopWidth: 0.5,
-            borderColor: COLORS.darkGreen,
           },
           tabBarItemStyle: {
             alignItems: "center",
