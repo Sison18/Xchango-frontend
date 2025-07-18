@@ -15,6 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { COLORS } from "../../assets/constants/theme"; // Assuming COLORS are defined elsewhere
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
+import { LinearGradient } from "expo-linear-gradient";
 
 // Main Component: DetailsScreen
 export default function DetailsScreen() {
@@ -84,14 +85,17 @@ export default function DetailsScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: COLORS.darkGreen }}
+      style={{ flex: 1, backgroundColor: "#0b5345" }}
       edges={["top"]}
     >
       <StatusBar style="light" />
 
       <View style={styles.container}>
         {/* Filter buttons */}
-        <View style={styles.filterContainer}>
+        <LinearGradient
+          colors={["#0b5345", COLORS.statusbarBg]}
+          style={styles.filterContainer}
+        >
           <TouchableOpacity
             style={[
               styles.filterButton,
@@ -172,13 +176,12 @@ export default function DetailsScreen() {
               Cancelled
             </Text>
           </TouchableOpacity>
-        </View>
+        </LinearGradient>
 
         {/* Display Total Items Count */}
         <Text style={styles.totalItemsText}>
           Total Items: {filteredData.length}
         </Text>
-
         {/* FlatList with pull-to-refresh */}
         <FlatList
           data={filteredData}
@@ -189,15 +192,15 @@ export default function DetailsScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={onRefresh} // Trigger data reload when user pulls
+              onRefresh={onRefresh}
               colors={[COLORS.darkGreen]}
               tintColor={COLORS.darkGreen}
+              progressBackgroundColor={COLORS.lightgreen}
             />
           }
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 30 }}
         />
-
         {/* Modal for Full Item Details */}
         {selectedItem && (
           <Modal
@@ -314,7 +317,7 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     backgroundColor: COLORS.mainBackgroundColor,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 8,
   },

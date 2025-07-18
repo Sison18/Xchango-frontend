@@ -50,7 +50,7 @@ const products = [
       },
     ],
     rating: 4.9,
-    status: "Pending Trade",
+    status: "Available",
     wishlist: [
       "gaming console",
       "high-end Android",
@@ -74,6 +74,7 @@ const products = [
     status2: "In-Progress",
     receiverPreference: "Children",
     donationDescription: "Donation for children's education and welfare.",
+    donations: 4,
   },
   {
     id: "p2",
@@ -120,6 +121,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 14,
   },
   {
     id: "p3",
@@ -166,6 +168,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 44,
   },
   {
     id: "p4",
@@ -212,6 +215,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 2,
   },
   {
     id: "p5",
@@ -258,6 +262,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 52,
   },
   {
     id: "p6",
@@ -303,6 +308,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 76,
   },
   {
     id: "p7",
@@ -349,6 +355,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 10,
   },
   {
     id: "p8",
@@ -394,6 +401,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 21,
   },
   {
     id: "p9",
@@ -439,6 +447,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 1,
   },
   {
     id: "p10",
@@ -485,6 +494,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 15,
   },
   {
     id: "p11",
@@ -531,6 +541,7 @@ const products = [
         postalCode: 1637,
       },
     ],
+    donations: 54,
   },
 ];
 

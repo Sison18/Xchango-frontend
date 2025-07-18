@@ -1,8 +1,9 @@
+// TopDonorScreen.js
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { COLORS } from "../../assets/constants/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import React, { useState } from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   View,
   Text,
@@ -10,84 +11,79 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  Platform,
+  RefreshControl,
 } from "react-native";
-
-// Sample data for the top donors
-const topDonors = [
-  {
-    id: 1,
-    name: "Sean Sta Ana",
-    donations: 20,
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
-  },
-  {
-    id: 2,
-    name: "John Cruz",
-    donations: 18,
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-  },
-  {
-    id: 3,
-    name: "Christian Mark Sison",
-    donations: 16,
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
-  },
-  {
-    id: 4,
-    name: "Andrei Custodio",
-    donations: 13,
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-  },
-  {
-    id: 5,
-    name: "Juan Dela Cruz",
-    donations: 20,
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-  },
-  {
-    id: 6,
-    name: "Rafael John",
-    donations: 11,
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
-  },
-  {
-    id: 7,
-    name: "Earl Agustin",
-    donations: 8,
-    image: "https://randomuser.me/api/portraits/men/7.jpg",
-  },
-  {
-    id: 8,
-    name: "Arthur Neri",
-    donations: 4,
-    image: "https://randomuser.me/api/portraits/men/8.jpg",
-  },
-  {
-    id: 9,
-    name: "Arthur Neri",
-    donations: 4,
-    image: "https://randomuser.me/api/portraits/men/8.jpg",
-  },
-];
+import axios from "axios";
+import { router } from "expo-router";
 
 export default function TopDonorScreen() {
+  const [donors, setDonors] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const [showOptions, setShowOptions] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Handle filter change
-  const handleFilterChange = (filter) => {
-    setSelectedFilter(filter);
+  const fetchDonors = async () => {
+    try {
+      const res = await axios.get("http://192.168.100.10:5000/products");
+      setDonors(res.data);
+    } catch (err) {
+      console.error("Fetch donors error:", err);
+    }
   };
 
-  // Render each donor
+  useEffect(() => {
+    fetchDonors().finally(() => setLoading(false));
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchDonors();
+    setRefreshing(false);
+  }, []);
+
+  const handleFilterChange = (filter) => {
+    setSelectedFilter(filter);
+    setShowOptions(false);
+  };
+
+  const filtered =
+    selectedFilter === "All"
+      ? donors
+      : donors.filter((d) => d.someField === selectedFilter);
+
+  const displayedDonors = [...filtered].sort(
+    (a, b) => b.donations - a.donations
+  );
+
+  if (!donors) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
+      </View>
+    );
+  }
+
   const renderDonorItem = ({ item, index }) => (
-    <View style={styles.donorItem}>
+    <TouchableOpacity
+      style={styles.donorItem}
+      onPress={() => {
+        if (item && item.id) {
+          router.push(`/(user-profile)/${item.id}`);
+        }
+      }}
+    >
       <Text style={styles.rank}>{index + 1}</Text>
-      <Image source={{ uri: item.image }} style={styles.donorImage} />
+      <Image source={{ uri: item.profile }} style={styles.donorImage} />
       <View style={styles.donorDetails}>
-        <Text style={styles.donorName}>{item.name}</Text>
+        <Text style={styles.donorName}>{item.userName}</Text>
         <Text style={styles.donationCount}>{item.donations} Donations</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -97,33 +93,86 @@ export default function TopDonorScreen() {
     >
       <StatusBar style="light" />
       <View style={styles.container}>
-        {/* Top Donor Header */}
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerText}>Top Donor</Text>
-          <TouchableOpacity onPress={() => handleFilterChange("All")}>
+          <TouchableOpacity
+            onPress={() => setShowOptions(!showOptions)}
+            style={styles.filterContainer}
+          >
             <Text style={styles.filterText}>{selectedFilter}</Text>
+            <FontAwesome name="sort-down" size={18} color="black" />
           </TouchableOpacity>
         </View>
 
-        {/* Top Donors List */}
-        <FlatList
-          data={topDonors}
-          renderItem={renderDonorItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.donorList}
-        />
+        {/* Loading or List */}
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={COLORS.darkGreen}
+            style={{ marginTop: 50 }}
+          />
+        ) : (
+          <FlatList
+            data={displayedDonors}
+            renderItem={renderDonorItem}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.donorList}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[COLORS.darkGreen]}
+                tintColor={COLORS.darkGreen}
+                progressBackgroundColor={COLORS.lightgreen}
+              />
+            }
+          />
+        )}
       </View>
+
+      {/* FILTER MODAL */}
+      <Modal
+        visible={showOptions}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowOptions(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowOptions(false)}
+        >
+          <Pressable style={styles.optionsMenu}>
+            {[
+              "All",
+              "Vehicles",
+              "Home & Living",
+              "Books",
+              "Tools",
+              "Electronics",
+            ].map((opt) => (
+              <TouchableOpacity
+                key={opt}
+                onPress={() => handleFilterChange(opt)}
+                style={styles.EESLContainer}
+              >
+                <Text style={styles.optionText}>{opt}</Text>
+              </TouchableOpacity>
+            ))}
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.mainBackgroundColor,
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   header: {
     flexDirection: "row",
@@ -136,22 +185,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.primary,
   },
-  filterText: {
-    fontSize: 16,
-    color: COLORS.secondary,
-    padding: 5,
+  filterContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 5,
+    paddingHorizontal: 15,
     borderColor: COLORS.secondary,
     borderWidth: 1,
     borderRadius: 5,
+    backgroundColor: COLORS.lightgreen,
+    gap: 10,
+  },
+  filterText: {
+    fontSize: 16,
+    color: COLORS.secondary,
   },
   donorList: {
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   donorItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: COLORS.cardBg,
     borderRadius: 10,
     marginBottom: 15,
     elevation: 2,
@@ -183,5 +239,36 @@ const styles = StyleSheet.create({
   donationCount: {
     fontSize: 14,
     color: COLORS.secondary,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "transparent",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+  },
+  optionsMenu: {
+    position: "absolute",
+    top: Platform.OS === "android" ? 60 : 70,
+    right: 20,
+    backgroundColor: COLORS.darkGreen,
+    zIndex: 20,
+    padding: 5,
+    borderRadius: 10,
+  },
+  optionText: {
+    fontSize: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    color: COLORS.mainBackgroundColor,
+  },
+  EESLContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.darkGreen,
+    backgroundColor: COLORS.xchangoColor,
+    paddingRight: 20,
+    marginVertical: 1,
+    borderRadius: 7,
   },
 });

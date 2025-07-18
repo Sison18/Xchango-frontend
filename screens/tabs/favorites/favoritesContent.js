@@ -19,7 +19,9 @@ export default function FavoritesContent({ products, refreshing, onRefresh }) {
   const renderItem = ({ item, index }) => (
     <>
       {/* PRODUCT CARD */}
-      <TouchableOpacity onPress={() => router.push(`/${item.id}`)}>
+      <TouchableOpacity
+        onPress={() => router.push(`/(product-details)/${item.id}`)}
+      >
         <Animated.View
           entering={FadeInDown.delay(150 * index).duration(500)}
           style={styles.animatedWrapper}
@@ -72,7 +74,6 @@ export default function FavoritesContent({ products, refreshing, onRefresh }) {
         style={styles.productsList}
         contentContainerStyle={{
           alignItems: "center",
-          paddingBottom: Platform.OS === "ios" ? 60 : 90,
           backgroundColor: COLORS.mainBackgroundColor,
         }}
         columnWrapperStyle={styles.columnWrapper}

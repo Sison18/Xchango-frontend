@@ -69,6 +69,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 45,
     borderRadius: 8,
+    borderTopRadius: 300,
+    borderTopRightRadius: 500,
+    borderBottomLeftRadius: 500,
+    borderRightRadius: 300,
   },
   requestText: {
     color: "#fff",

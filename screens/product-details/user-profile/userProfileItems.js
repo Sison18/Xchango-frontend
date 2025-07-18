@@ -12,8 +12,6 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS } from "../../../../XChangoProject/assets/constants/theme";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { router } from "expo-router";
-import React from "react";
-import Line from "../../../../XChangoProject/assets/constants/line";
 
 export default function UserItem({ products }) {
   const renderItem = ({ item, index }) => (

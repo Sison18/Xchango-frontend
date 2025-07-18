@@ -39,14 +39,6 @@ export default function RootLayout() {
             gestureEnabled: false,
           }}
         />
-
-        {/* REQUEST TRADE */}
-        <Stack.Screen
-          name="(product-details)/(request)/requestTrade"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
       </Stack>
     </SafeAreaProvider>
   );

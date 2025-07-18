@@ -15,6 +15,7 @@ export default function CustomPicker({
   onValueChange,
   options,
   placeholder = "Select an option",
+  placeholderStyle = {},
 }) {
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -26,7 +27,13 @@ export default function CustomPicker({
         onPress={() => setModalVisible(true)}
       >
         {/* TEXT */}
-        <Text style={[styles.text, !selectedValue && styles.placeholder]}>
+        <Text
+          style={[
+            styles.text,
+            !selectedValue && styles.placeholder,
+            !selectedValue && placeholderStyle,
+          ]}
+        >
           {selectedValue || placeholder}
         </Text>
         <Ionicons name="chevron-down" size={18} color="#333" />

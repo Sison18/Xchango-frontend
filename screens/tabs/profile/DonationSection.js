@@ -84,6 +84,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    borderTopLeftRadius: 200,
+    borderTopRightRadius: 200,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
   donateButtonText: {
     color: "#fff",
@@ -109,6 +113,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+    borderTopRightRadius: 100,
+    borderTopLeftRadius: 900,
+    borderBottomLeftRadius: 100,
+    borderBottomRightRadius: 900,
   },
   smallButtonText: {
     fontSize: 12,

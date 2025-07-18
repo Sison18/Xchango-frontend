@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     paddingTop: 10,
     gap: 10,
-    backgroundColor: COLORS.lightgreen,
+    backgroundColor: COLORS.mainBackgroundColor,
   },
 
   // XCHANGO TITLE

@@ -47,15 +47,17 @@ export default function FavoriteScreen() {
         edges={["top"]}
       >
         <StatusBar style="light" />
-        <HomeScreenHeader />
+        <View style={{ flex: 1, backgroundColor: COLORS.mainBackgroundColor }}>
+          <HomeScreenHeader />
 
-        <FavoritesHeader />
+          <FavoritesHeader />
 
-        <FavoritesContent
-          products={product}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
+          <FavoritesContent
+            products={product}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        </View>
       </SafeAreaView>
     </>
   );

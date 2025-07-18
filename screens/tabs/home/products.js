@@ -19,7 +19,9 @@ export default function Products({ products }) {
   const renderItem = ({ item, index }) => (
     <>
       {/* PRODUCT CARDS */}
-      <TouchableOpacity onPress={() => router.push(`/${item.id}`)}>
+      <TouchableOpacity
+        onPress={() => router.push(`/(product-details)/${item.id}`)}
+      >
         <Animated.View // Card animation at
           entering={FadeInDown.delay(150 * index).duration(500)}
           style={styles.animatedWrapper}
@@ -76,7 +78,6 @@ export default function Products({ products }) {
         renderItem={renderItem}
         numColumns={2}
         showsVerticalScrollIndicator={false}
-        style={styles.productsList}
         contentContainerStyle={{ alignItems: "center", paddingBottom: 0 }}
         columnWrapperStyle={styles.columnWrapper}
       />
@@ -104,9 +105,6 @@ const styles = StyleSheet.create({
   },
 
   // PRODUCT CARDS
-  productsList: {
-    paddingBottom: Platform.OS === "android" ? 50 : 60,
-  },
   animatedWrapper: {
     width: cardWidth,
     margin: cardMargin,
@@ -128,7 +126,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: COLORS.mainBackgroundColor,
+    backgroundColor: COLORS.lightgreen,
     padding: 5,
     borderRadius: 20,
     zIndex: 100,

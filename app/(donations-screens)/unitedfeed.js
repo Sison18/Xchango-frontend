@@ -92,9 +92,10 @@ export default function UnitedFeedScreen() {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefresh} // Trigger data reload when user pulls
+            onRefresh={onRefresh}
             colors={[COLORS.darkGreen]}
             tintColor={COLORS.darkGreen}
+            progressBackgroundColor={COLORS.lightgreen}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -206,12 +207,14 @@ const ContentPosts = ({ imageList = [], info }) => {
             ref={flatListRef}
             data={imageList}
             renderItem={({ item, index }) => (
-              <Image
-                source={{ uri: item }}
-                style={styles.image}
-                resizeMode="contain"
-                defaultSource={require("../../assets/images/banner1.png")}
-              />
+              <TouchableOpacity onPress={() => openImagePreview(item)}>
+                <Image
+                  source={{ uri: item }}
+                  style={styles.image}
+                  resizeMode="contain"
+                  defaultSource={require("../../assets/images/banner1.png")}
+                />
+              </TouchableOpacity>
             )}
             keyExtractor={(item, index) => index.toString()}
             horizontal
@@ -264,7 +267,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.mainBackgroundColor,
   },
   card: {
-    backgroundColor: COLORS.lightgreen,
+    backgroundColor: COLORS.mainBackgroundColor,
     marginBottom: 10,
     borderRadius: 15,
     overflow: "hidden",
@@ -307,7 +310,7 @@ const styles = StyleSheet.create({
   },
   imageGrid: {
     marginTop: 10,
-    backgroundColor: COLORS.cardBg,
+    backgroundColor: COLORS.lightgreen,
   },
   paginationContainer: {
     flexDirection: "row",

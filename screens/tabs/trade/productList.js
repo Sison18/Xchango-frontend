@@ -24,7 +24,10 @@ export default function ProductList({ status }) {
         entering={FadeInRight.duration(900).delay(index * 100)}
         key={index}
       >
-        <TouchableOpacity style={styles.allCards}>
+        <TouchableOpacity
+          style={styles.allCards}
+          onPress={() => router.push(`/(product-details)/${item.id}`)}
+        >
           {/* LEFT CONTAINER */}
           <View style={styles.leftContainer}>
             <Image
@@ -62,7 +65,9 @@ export default function ProductList({ status }) {
                 </>
               ) : (
                 <>
-                  <TouchableOpacity onPress={() => router.push("/editItem")}>
+                  <TouchableOpacity
+                    onPress={() => router.push(`/(edit-add-item)/${item.id}`)}
+                  >
                     <FontAwesome name="edit" size={25} color={COLORS.primary} />
                   </TouchableOpacity>
                   <TouchableOpacity>
@@ -92,7 +97,7 @@ export default function ProductList({ status }) {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: Platform.OS === "ios" ? 130 : 200,
+          paddingBottom: 60,
         }}
         ListHeaderComponent={
           // NOTE MESSAGE
