@@ -78,7 +78,7 @@ const products = [
       "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
     ],
     status2: "In-Progress",
-    receiverPreference: "Children",
+    receiverPreference: ["Children", "Adult", "Senior Citizen"],
     donationDescription: "Donation for children's education and welfare.",
     donations: 4,
   },

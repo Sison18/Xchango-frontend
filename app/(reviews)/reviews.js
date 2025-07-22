@@ -57,7 +57,7 @@ const FilterBar = ({ selectedRating, setSelectedRating }) => {
               selectedRating === opt && styles.selectedFilterText,
             ]}
           >
-            {opt === "All" ? "All" : `${opt} ✮`}
+            {opt === "All" ? "All" : `${opt} ★`}
           </Text>
         </TouchableOpacity>
       ))}
@@ -302,7 +302,6 @@ const styles = StyleSheet.create({
   },
   commentImage: {
     height: 200,
-    borderRadius: 8,
   },
   dotsContainer: {
     flexDirection: "row",
@@ -333,7 +332,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalImage: {
-    width: "90%",
-    height: "70%",
+    width: "100%",
+    height: "90%",
   },
 });

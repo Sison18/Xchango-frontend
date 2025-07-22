@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
   },
   modalImage: {
     width: "90%",
-    height: "70%",
+    height: "80%",
   },
 });

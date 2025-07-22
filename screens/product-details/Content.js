@@ -112,7 +112,7 @@ export default function Content({
 const styles = StyleSheet.create({
   // TITLE
   title: {
-    color: COLORS.primary,
+    color: COLORS.xchangoColor,
     fontSize: 20,
     fontWeight: "900",
     paddingTop: 5,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderWidth: 0.5,
     borderColor: COLORS.textboxBorderColor,
-    backgroundColor: "white",
+    backgroundColor: COLORS.mainBackgroundColor,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
@@ -134,7 +134,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 8,
-    marginVertical: 8,
+    marginTop: 10,
+    marginBottom: 20,
   },
   descriptionText: {
     fontSize: 14,

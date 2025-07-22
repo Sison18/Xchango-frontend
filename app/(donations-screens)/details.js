@@ -95,7 +95,7 @@ export default function DetailsScreen() {
           colors={["#0b5345", COLORS.statusbarBg]}
           style={styles.filterContainer}
         >
-          {["All", "In-Progress", "Donated", "Pending", "Cancelled"].map(
+          {["All", "Pending", "In-Progress", "Donated", "Cancelled"].map(
             (status) => (
               <TouchableOpacity
                 key={status}
@@ -151,37 +151,51 @@ export default function DetailsScreen() {
           >
             <View style={styles.modalContent}>
               <ScrollView contentContainerStyle={styles.modalScroll}>
-                <Text style={styles.modalTitle}>{selectedItem.title}</Text>
-                <Text style={styles.modalDescription}>
-                  {selectedItem.donationDescription}
-                </Text>
+                <View style={styles.topModalContainer}>
+                  <Text style={styles.modalTitle}>{selectedItem.title}</Text>
+                  <Text style={styles.modalDescription}>
+                    ♡ {selectedItem.donationDescription}
+                  </Text>
 
-                {/* Addresses */}
-                {selectedItem.address?.length > 0 && (
-                  <View style={styles.addressContainer}>
-                    <Text style={styles.modalLabel}>Addresses:</Text>
-                    {selectedItem.address.map((addr, i) => (
-                      <Text key={i} style={styles.modalLocation}>
-                        {`${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.regionProvince}, ${addr.postalCode}`}
-                      </Text>
-                    ))}
-                  </View>
-                )}
+                  {/* Addresses */}
+                  {selectedItem.address?.length > 0 && (
+                    <View style={styles.addressContainer}>
+                      {selectedItem.address.map((addr, i) => (
+                        <Text key={i} style={styles.modalLocation}>
+                          <Text style={styles.modalLabel}>Addresses: </Text>
+                          {`${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.regionProvince}, ${addr.postalCode}`}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
 
-                <Text style={styles.modalReceiverPreference}>
-                  <Text style={styles.modalLabel}>Receiver Preference: </Text>
-                  {selectedItem.receiverPreference}
-                </Text>
+                  <Text style={styles.modalReceiverPreference}>
+                    <Text style={styles.modalLabel}>Receiver Preference: </Text>
+                    {selectedItem.receiverPreference}
+                  </Text>
 
-                <Text style={styles.modalStatus}>
-                  <Text style={styles.modalLabel}>Status: </Text>
-                  {selectedItem.status2}
-                </Text>
+                  <Text style={styles.modalStatus}>
+                    <Text style={styles.modalLabel}>Condition: </Text>
+                    {selectedItem.condition}
+                  </Text>
+
+                  <Text style={styles.modalStatus}>
+                    <Text style={styles.modalLabel}>Status: </Text>
+                    {selectedItem.status2}
+                  </Text>
+
+                  {/* Render button for "Donated" status */}
+                  {selectedItem.status2 === "Donated" && (
+                    <TouchableOpacity style={styles.donatedButton}>
+                      <Text style={styles.donatedButtonText}>View</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
 
                 {/* Image Carousel */}
                 <ScrollView
                   horizontal
-                  showsHorizontalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={true}
                   style={styles.imageCarousel}
                 >
                   {selectedItem.image.map((uri, idx) => (
@@ -249,12 +263,12 @@ const DonationItem = ({ item, openModal }) => (
 // Status style helper
 const getStatusStyle = (status) => {
   switch (status) {
+    case "Pending":
+      return styles.pending;
     case "In-Progress":
       return styles.inProgress;
     case "Donated":
       return styles.donated;
-    case "Pending":
-      return styles.pending;
     case "Cancelled":
       return styles.cancelled;
     default:
@@ -325,53 +339,60 @@ const styles = StyleSheet.create({
     maxHeight: "80%",
     overflow: "hidden",
   },
-  modalScroll: { padding: 20, alignItems: "center" },
+
+  topModalContainer: {
+    borderWidth: 1,
+    borderColor: COLORS.cardBg,
+    backgroundColor: COLORS.lightgreen,
+    borderRadius: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
   modalTitle: {
     fontSize: 24,
     fontWeight: "700",
-    color: COLORS.primary,
-    marginBottom: 10,
+    color: COLORS.darkGreen,
     textAlign: "center",
   },
   modalDescription: {
-    fontSize: 16,
+    fontSize: 14,
     color: COLORS.primary,
-    marginBottom: 15,
     lineHeight: 22,
-    textAlign: "center",
   },
-  modalLabel: { fontWeight: "bold", fontSize: 16, color: COLORS.primary },
+  modalLabel: { fontWeight: "bold", fontSize: 16, color: COLORS.xchangoColor },
   addressContainer: {
-    marginTop: 20,
-    marginBottom: 15,
+    marginTop: 10,
     width: "100%",
-    paddingHorizontal: 10,
   },
   modalLocation: {
     fontSize: 14,
     color: COLORS.secondary,
     marginTop: 5,
-    textAlign: "center",
   },
   modalReceiverPreference: {
     fontSize: 14,
     color: COLORS.primary,
     marginTop: 10,
-    textAlign: "center",
   },
   modalStatus: {
     fontSize: 14,
     color: COLORS.primary,
     marginTop: 10,
-    textAlign: "center",
   },
-  imageCarousel: { width: "100%", marginVertical: 20 },
+  imageCarousel: {
+    width: "100%",
+    marginTop: 20,
+    marginBottom: 10,
+    marginLeft: 20,
+    paddingBottom: 10,
+  },
   modalImageItem: {
     width: 300,
     height: 200,
     borderRadius: 10,
-    marginRight: 10,
-    resizeMode: "contain",
+    marginRight: 20,
+    resizeMode: "cover",
   },
   modalOverlay: {
     flex: 1,
@@ -380,22 +401,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalImage: {
-    width: "90%",
-    height: 300,
+    width: "100%",
+    height: "90%",
     borderRadius: 10,
     marginTop: 20,
     resizeMode: "contain",
   },
   closeModalButton: {
-    marginTop: 20,
+    marginBottom: 15,
     backgroundColor: COLORS.xchangoColor,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: "center",
+    alignSelf: "center",
+    width: 140,
   },
   closeModalText: {
     fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.mainBackgroundColor,
+  },
+  donatedButton: {
+    backgroundColor: COLORS.darkGreen,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: "center",
+    width: 100,
+  },
+  donatedButtonText: {
+    fontSize: 12,
     fontWeight: "600",
     color: COLORS.mainBackgroundColor,
   },

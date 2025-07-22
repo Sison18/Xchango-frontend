@@ -88,7 +88,11 @@ export default function UnitedFeedScreen() {
   return (
     <>
       <StatusBar style="light" />
-      <HeaderBar title="" confirmBack={false} rightComponent={rightCompo()} />
+      <HeaderBar
+        title="Donations Feed"
+        confirmBack={false}
+        rightComponent={rightCompo()}
+      />
 
       <FlatList
         data={data}
@@ -332,7 +336,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 2,
   },
   profileRow: {
     flexDirection: "row",
@@ -397,7 +401,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalImage: {
-    width: "95%",
-    height: "80%",
+    width: "100%",
+    height: "90%",
   },
 });

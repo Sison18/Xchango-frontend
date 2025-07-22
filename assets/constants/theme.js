@@ -47,3 +47,24 @@ export const imageMap = {
   three: require("../../assets/images/welcome-page-three.png"),
   four: require("../../assets/images/welcome-page-four.png"),
 };
+
+// Sa "AboutUs Screen" to
+export const featureDetails = {
+  "⇄ Item-for-Item Trading":
+    "The Item Trading feature allows users to engage in a unique and interactive way of exchanging items. Not only can users post their own items for sale, but they also have the option to trade their items with others. This feature empowers users to request specific items from other users, initiating trade offers based on mutual interest. The process is seamless and user-friendly, with options for users to list their items, specify trade preferences, and negotiate directly with other traders.",
+  "❒ Shipping & Tracking":
+    "Once an item is listed for trade, users can request to exchange items with others, initiating a smooth transaction process. Upon agreement, the app provides users with a streamlined shipping process where they can arrange for their items to be sent to the recipient. The shipping process is accompanied by real-time tracking so users can monitor the status of their trade items as they are in transit.",
+  "✓ Community Verification":
+    "Community verification in your mobile app serves as a critical feature that fosters trust and safety within the platform. This feature allows users to authenticate each other within the community by verifying their identity and their history of transactions. The verification process might include confirming a user's contact information, social media profiles, or previous successful exchanges.",
+  "✉ In-App Chat for Traders":
+    "The in-app chat feature for traders enables users to easily communicate and negotiate trades directly within the platform. This feature allows users to trade their items for others, creating a seamless and interactive experience. Users can browse through items listed by other traders and initiate conversations to request a trade or ask questions about specific items.",
+  "𐙚 ̊ Donate Items to Help Others":
+    "Users have the opportunity to donate items to help others in need. This feature allows users to give away unwanted items to those who may benefit from them, fostering a sense of community and support. Additionally, the app enables users to trade their items for other items, offering a more flexible and sustainable way to exchange goods.",
+};
+export const featureImages = {
+  "⇄ Item-for-Item Trading": require("../../assets/images/ecommerce-splash.png"),
+  "❒ Shipping & Tracking": require("../../assets/images/profile-sean.jpg"),
+  "✓ Community Verification": require("../../assets/images/profile-shane.jpg"),
+  "✉ In-App Chat for Traders": require("../../assets/images/profile-sison.jpg"),
+  "𐙚 ̊ Donate Items to Help Others": require("../../assets/images/profile-sison.jpg"),
+};

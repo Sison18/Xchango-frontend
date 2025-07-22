@@ -55,9 +55,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 1,
     borderColor: COLORS.textboxBorderColor,
-    backgroundColor: "white",
-    paddingTop: Platform.OS === "android" ? 10 : 15,
-    paddingBottom: Platform.OS === "android" ? 10 : 15,
+    backgroundColor: COLORS.mainBackgroundColor,
+    paddingVertical: Platform.OS === "android" ? 15 : 15,
     paddingHorizontal: 15,
     justifyContent: "space-around",
     zIndex: 10,
@@ -66,8 +65,8 @@ const styles = StyleSheet.create({
   // REQUEST BUTTON
   requestButton: {
     backgroundColor: COLORS.darkGreen,
-    paddingVertical: 15,
-    paddingHorizontal: 45,
+    paddingVertical: 10,
+    paddingHorizontal: 60,
     borderRadius: 8,
     borderTopRadius: 300,
     borderTopRightRadius: 500,

@@ -125,7 +125,8 @@ const styles = StyleSheet.create({
   thumbnailSwipePriceContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    paddingVertical: 10,
+    backgroundColor: COLORS.lightgreen,
   },
   thumbnailList: {
     width: "65%",
