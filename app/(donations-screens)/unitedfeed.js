@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, memo } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,56 +14,65 @@ import {
   Platform,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { COLORS } from "../../assets/constants/theme"; // Assuming COLORS are defined elsewhere
+import { COLORS } from "../../assets/constants/theme";
 import HeaderBar from "../../components/header";
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { router } from "expo-router";
-
 import ChatXChango from "../../components/chatXChango";
 
-const width = Dimensions.get("screen").width;
+const { width: screenWidth } = Dimensions.get("screen");
+// Approximate item height (profile + text + image + dots + padding)
+const ITEM_HEIGHT = 450;
 
-// Main Component: UnitedFeedScreen
 export default function UnitedFeedScreen() {
-  const [data, setData] = useState(null); // Store fetched data
-  const [refreshing, setRefreshing] = useState(false); // State for pull-to-refresh
+  const [data, setData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
-  // Pull-to-refresh callback
+  const getPostDetails = async () => {
+    try {
+      const response = await axios.get("http://192.168.100.10:5000/products");
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    getPostDetails();
+  }, []);
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await getPostDetails();
     setRefreshing(false);
   }, []);
 
-  // Fetch data when the component mounts
-  useEffect(() => {
-    getPostDetails();
-  }, []);
+  const renderPost = useCallback(
+    ({ item }) => <MemoContentPosts imageList={item.commentImgs} info={item} />,
+    []
+  );
 
-  // Function to fetch data from the backend server
-  const getPostDetails = async () => {
-    const URL = `http://192.168.100.10:5000/products`;
-    try {
-      const response = await axios.get(URL);
-      setData(response.data); // Store fetched data
-    } catch (error) {
-      console.error("Error fetching product:", error.message);
-    }
-  };
+  const getItemLayout = useCallback(
+    (_data, index) => ({
+      length: ITEM_HEIGHT,
+      offset: ITEM_HEIGHT * index,
+      index,
+    }),
+    []
+  );
 
-  // If no data is available, show a loading indicator
   if (!data) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.darkGreen} />
       </View>
     );
   }
 
   const rightCompo = () => (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+    <View style={styles.rightCompo}>
       <TouchableOpacity onPress={() => router.push("/message")}>
         <ChatXChango
           imageStyle={{ width: 25, height: 25 }}
@@ -71,7 +80,7 @@ export default function UnitedFeedScreen() {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setShowOptions(!showOptions)}>
-        <Entypo name="dots-three-vertical" size={24} color="#ffffffff" />
+        <Entypo name="dots-three-vertical" size={24} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -79,15 +88,11 @@ export default function UnitedFeedScreen() {
   return (
     <>
       <StatusBar style="light" />
-
       <HeaderBar title="" confirmBack={false} rightComponent={rightCompo()} />
 
-      {/* FlatList with pull-to-refresh */}
       <FlatList
         data={data}
-        renderItem={({ item }) => (
-          <ContentPosts imageList={item.image} info={item} />
-        )}
+        renderItem={renderPost}
         keyExtractor={(item) => item.id.toString()}
         refreshControl={
           <RefreshControl
@@ -99,22 +104,26 @@ export default function UnitedFeedScreen() {
           />
         }
         showsVerticalScrollIndicator={false}
+        // performance optimizations:
+        initialNumToRender={5}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={true}
+        getItemLayout={getItemLayout}
       />
 
-      {/* MORE OPTIONS */}
       <Modal
         visible={showOptions}
         transparent
         animationType="fade"
         onRequestClose={() => setShowOptions(false)}
       >
-        {/* TAP TO CLOSE THE OPTIONS MENU */}
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={() => setShowOptions(false)}
         >
-          <TouchableOpacity style={styles.optionsMenu} onPress={() => {}}>
-            {/* NOTIFICATIONS */}
+          <View style={styles.optionsMenu}>
             <TouchableOpacity
               onPress={() => {
                 setShowOptions(false);
@@ -130,7 +139,6 @@ export default function UnitedFeedScreen() {
                 <Text style={styles.optionText}>Notifications</Text>
               </View>
             </TouchableOpacity>
-            {/* BACK TO HOME PAGE */}
             <TouchableOpacity
               onPress={() => {
                 setShowOptions(false);
@@ -142,28 +150,41 @@ export default function UnitedFeedScreen() {
                 <Text style={styles.optionText}>Back to Home Page</Text>
               </View>
             </TouchableOpacity>
-          </TouchableOpacity>
+          </View>
         </Pressable>
       </Modal>
     </>
   );
 }
 
-// ContentPosts Component
-const ContentPosts = ({ imageList = [], info }) => {
+// memoized content post to avoid unnecessary re-renders
+const MemoContentPosts = memo(ContentPosts);
+
+function ContentPosts({ imageList, info }) {
+  const images = Array.isArray(imageList)
+    ? imageList
+    : imageList
+    ? [imageList]
+    : [];
+
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  // Format date from the backend (assuming info.date is available)
+  const cardMargin = 20;
+  const cardPadding = 10;
+  const imageWidth = screenWidth - cardMargin * 2 - cardPadding * 2;
+  const imageSpacing = 10;
+  const snapInterval = imageWidth + imageSpacing;
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      weekday: "short", // Mon, Tues
-      year: "numeric", // 2023
-      month: "short", // Oct
-      day: "numeric", // 12
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -171,74 +192,81 @@ const ContentPosts = ({ imageList = [], info }) => {
     setSelectedImageUri(uri);
     setPreviewVisible(true);
   };
-
   const closeImagePreview = () => {
     setPreviewVisible(false);
     setSelectedImageUri(null);
   };
 
-  const handleScroll = (event) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const width = event.nativeEvent.layoutMeasurement.width;
-    const index = Math.floor(contentOffsetX / width);
-    setActiveIndex(index);
+  const handleScroll = (e) => {
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const idx = Math.round(offsetX / snapInterval);
+    setActiveIndex(idx);
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.postContainer}>
       <View style={styles.card}>
-        <View style={styles.profileNameCaption}>
+        <View style={styles.profileRow}>
           <Image
             source={require("../../assets/images/xchango-logo.png")}
             style={styles.xchangoImg}
           />
           <View style={styles.textContainer}>
             <Text style={styles.username}>XChango</Text>
-            {/* Date Display */}
             <Text style={styles.date}>{formatDate(info.date)}</Text>
-            {/* Add date below the username */}
             <Text style={styles.message}>{info.message}</Text>
           </View>
         </View>
 
-        {/* Display multiple images horizontally */}
-        <View>
-          <FlatList
-            ref={flatListRef}
-            data={imageList}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={() => openImagePreview(item)}>
-                <Image
-                  source={{ uri: item }}
-                  style={styles.image}
-                  resizeMode="contain"
-                  defaultSource={require("../../assets/images/banner1.png")}
+        {images.length > 1 && (
+          <>
+            <FlatList
+              ref={flatListRef}
+              data={images}
+              keyExtractor={(_, i) => i.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={snapInterval}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              scrollEventThrottle={16}
+              onScroll={handleScroll}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => openImagePreview(item)}
+                  style={{ marginRight: imageSpacing }}
+                  activeOpacity={0.8}
+                >
+                  <Image
+                    source={{ uri: item }}
+                    style={[styles.image, { width: imageWidth }]}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              )}
+              contentContainerStyle={styles.imageGrid}
+            />
+            <View style={styles.paginationContainer}>
+              {images.map((_, idx) => (
+                <View
+                  key={idx}
+                  style={[styles.dot, idx === activeIndex && styles.activeDot]}
                 />
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleScroll}
-            contentContainerStyle={styles.imageGrid}
-          />
+              ))}
+            </View>
+          </>
+        )}
 
-          {/* Dot Pagination */}
-          <View style={styles.paginationContainer}>
-            {imageList.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  activeIndex === index ? styles.activeDot : {},
-                ]}
-              />
-            ))}
-          </View>
-        </View>
+        {images.length === 1 && (
+          <TouchableOpacity onPress={() => openImagePreview(images[0])}>
+            <Image
+              source={{ uri: images[0] }}
+              style={[styles.image, { width: imageWidth }]}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+        )}
 
-        {/* Image Preview Modal */}
         <Modal visible={previewVisible} transparent animationType="fade">
           <Pressable style={styles.modalOverlay} onPress={closeImagePreview}>
             <Image
@@ -251,39 +279,71 @@ const ContentPosts = ({ imageList = [], info }) => {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  rightCompo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  optionsMenu: {
+    position: "absolute",
+    top: Platform.OS === "android" ? 40 : 80,
+    right: 20,
+    backgroundColor: COLORS.mainBackgroundColor,
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 20,
+  },
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 8,
+  },
+  optionText: {
+    fontSize: 14,
+    marginLeft: 8,
+    color: COLORS.primary,
+  },
+
+  postContainer: {
+    paddingTop: 10,
+    backgroundColor: COLORS.mainBackgroundColor,
+  },
+  card: {
+    backgroundColor: COLORS.mainBackgroundColor,
+    marginHorizontal: 20,
+    marginBottom: 10,
+    borderRadius: 15,
+    overflow: "hidden",
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  profileRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
   xchangoImg: {
     width: 40,
     height: 40,
     borderRadius: 20,
     marginRight: 10,
   },
-
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    backgroundColor: COLORS.mainBackgroundColor,
-  },
-  card: {
-    backgroundColor: COLORS.mainBackgroundColor,
-    marginBottom: 10,
-    borderRadius: 15,
-    overflow: "hidden",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    padding: 10,
-    marginHorizontal: 20,
-  },
-  profileNameCaption: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-
   textContainer: {
     flex: 1,
   },
@@ -303,14 +363,14 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginTop: 5,
   },
-  image: {
-    width: width - 60,
-    height: undefined,
-    aspectRatio: 1,
-  },
+
   imageGrid: {
     marginTop: 10,
     backgroundColor: COLORS.lightgreen,
+  },
+  image: {
+    height: 300,
+    borderRadius: 8,
   },
   paginationContainer: {
     flexDirection: "row",
@@ -318,15 +378,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dot: {
-    width: 8,
-    height: 8,
+    width: 7,
+    height: 7,
     borderRadius: 4,
-    margin: 5,
-    backgroundColor: COLORS.placeholder,
+    backgroundColor: COLORS.cardBg,
+    marginHorizontal: 4,
   },
   activeDot: {
     backgroundColor: COLORS.darkGreen,
+    width: 8,
+    height: 8,
   },
+
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.8)",
@@ -336,32 +399,5 @@ const styles = StyleSheet.create({
   modalImage: {
     width: "95%",
     height: "80%",
-  },
-
-  // OPTIONS MENU
-  optionsMenu: {
-    position: "absolute",
-    top: Platform.OS === "android" ? 40 : 80,
-    right: 20,
-    backgroundColor: COLORS.mainBackgroundColor,
-    borderRadius: 10,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 5,
-    zIndex: 20,
-  },
-  optionText: {
-    fontSize: 14,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    color: COLORS.primary,
-  },
-  // ROW CONTAINER
-  rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
   },
 });

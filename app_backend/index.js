@@ -69,8 +69,14 @@ const products = [
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
     comment: "Maayos at mabilis ang palitan. Pareho kaming satisfied!",
-    commentImg:
+    commentImgs: [
       "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+      "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+      "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+      "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+      "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+      "https://img.freepik.com/free-vector/business-agreement-concept-illustration_114360-7584.jpg",
+    ],
     status2: "In-Progress",
     receiverPreference: "Children",
     donationDescription: "Donation for children's education and welfare.",
@@ -107,8 +113,7 @@ const products = [
     time: "16 min",
     comment:
       "Hindi ko inakala na may gusto palang makipagpalit ng lumang bike ko. Sulit!",
-    commentImg:
-      "https://img.freepik.com/free-vector/payment-success-illustration_23-2148574227.jpg",
+    commentImgs: null,
     status2: "Donated",
     receiverPreference: "Elderly",
     donationDescription: "Donation to support elderly care and services.",
@@ -154,7 +159,7 @@ const products = [
     message: "Sa BGC nalang tayo meet up",
     time: "16 min",
     comment: "Medyo matagal lang ang usapan, pero naging okay din ang kapalit.",
-    commentImg:
+    commentImgs:
       "https://img.freepik.com/free-vector/transaction-complete-concept-illustration_114360-4865.jpg",
     status2: "In-Progress",
     receiverPreference: "Students",
@@ -201,7 +206,7 @@ const products = [
     time: "16 min",
     comment:
       "Napakaganda ng konsepto ng barter. Nung una, nag-aalangan ako, pero nung natuloy ang palitan ng lumang cellphone kapalit ng oven, pareho kaming natuwa. Walang cash involved, pero pareho kaming panalo.",
-    commentImg:
+    commentImgs:
       "https://img.freepik.com/free-vector/invoice-paid-concept-illustration_114360-7940.jpg",
     status2: "In-Progress",
     receiverPreference: "Families in need",
@@ -248,8 +253,7 @@ const products = [
     time: "16 min",
     comment:
       "Nakakatuwa kasi bukod sa pagtipid, nakakatulong din sa kapwa. Nung pandemic, naging malaking bagay ang barter para makuha ko ang basic needs nang hindi na kailangan gumastos.",
-    commentImg:
-      "https://img.freepik.com/free-vector/mobile-payment-illustration_23-2148590526.jpg",
+    commentImgs: null,
     status2: "In-Progress",
     receiverPreference: "Homeless",
     donationDescription: "Support for homeless shelters and food.",
@@ -294,8 +298,11 @@ const products = [
     message: "Ano bro?",
     time: "16 min",
     comment: "Medyo matagal lang ang usapan, pero naging okay din ang kapalit.",
-    commentImg:
+    commentImgs: [
       "https://img.freepik.com/free-vector/order-confirmed-concept-illustration_114360-5162.jpg",
+      "https://img.freepik.com/free-vector/order-confirmed-concept-illustration_114360-5162.jpg",
+      "https://img.freepik.com/free-vector/order-confirmed-concept-illustration_114360-5162.jpg",
+    ],
     status2: "Cancelled",
     receiverPreference: "Victims of Calamities",
     donationDescription: "Relief funds for victims of natural disasters.",
@@ -341,7 +348,7 @@ const products = [
     time: "16 min",
     comment:
       "Ginamit ko ang platform para ipagpalit ang lumang printer ko. Nakahanap ako ng estudyanteng nangangailangan at napalitan ito ng ilang school supplies para sa anak ko. Bukod sa practical, parang may sense of community rin.",
-    commentImg:
+    commentImgs:
       "https://img.freepik.com/free-vector/payment-success-illustration_23-2148574227.jpg",
     status2: "Pending",
     receiverPreference: "Orphanages",
@@ -387,7 +394,7 @@ const products = [
     message: "Hey! I’m interested how much can you offer for the item? 😄",
     time: "16 min",
     comment: "Nagkapalitan kami ng gamit na walang labas na pera. Panalo!",
-    commentImg:
+    commentImgs:
       "https://img.freepik.com/free-vector/online-payment-concept-illustration_114360-489.jpg",
     status2: "Donated",
     receiverPreference: "Persons with disabilities (PWD)",
@@ -433,8 +440,12 @@ const products = [
     message: "Di ko alam doon eh hahaha",
     time: "16 min",
     comment: "Safe ang transaksyon at may tiwala sa kausap. Good job!",
-    commentImg:
+    commentImgs: [
       "https://img.freepik.com/free-vector/payment-confirmation-concept-illustration_114360-7357.jpg",
+      "https://img.freepik.com/free-vector/payment-confirmation-concept-illustration_114360-7357.jpg",
+      "https://img.freepik.com/free-vector/payment-confirmation-concept-illustration_114360-7357.jpg",
+      "https://img.freepik.com/free-vector/payment-confirmation-concept-illustration_114360-7357.jpg",
+    ],
     status2: "Pending",
     receiverPreference: "Anyone",
     donationDescription: "Open donations for anyone in need.",
@@ -480,7 +491,7 @@ const products = [
     time: "16 min",
     comment:
       "Minsan may mga hindi seryoso—nangako na makikipagkita pero hindi sumipot. Mas okay sana kung may rating system para malaman kung sino ang trustworthy.",
-    commentImg:
+    commentImgs:
       "https://img.freepik.com/free-vector/contactless-payment-illustration_114360-5133.jpg",
     status2: "Donated",
     receiverPreference: "Low-income families",
@@ -527,8 +538,7 @@ const products = [
     time: "16 min",
     comment:
       "Medyo mahirap lang sa umpisa maghanap ng tamang kapalit. Pero kung patient ka, makakahanap ka rin ng willing makipagbarter. Sana lang mas maraming active users para mas mabilis ang match.",
-    commentImg:
-      "https://img.freepik.com/free-vector/online-banking-concept-illustration_114360-4892.jpg",
+    commentImgs: null,
     status2: "Cancelled",
     receiverPreference: "Refugees",
     donationDescription: "Donations for refugees and displaced persons.",

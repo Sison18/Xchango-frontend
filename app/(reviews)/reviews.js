@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,14 +7,20 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
+  Modal,
+  Pressable,
+  Dimensions,
 } from "react-native";
 import HeaderBar from "../../components/header";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { COLORS } from "../../assets/constants/theme";
 
+const { width: screenWidth } = Dimensions.get("window");
+
 const StarRating = ({ rating }) => (
-  <View style={{ flexDirection: "row" }}>
+  <View style={styles.ratingRow}>
     {[...Array(5)].map((_, i) => {
       let icon = "star-outline";
       if (i < Math.floor(rating)) icon = "star";
@@ -25,7 +31,7 @@ const StarRating = ({ rating }) => (
           name={icon}
           size={16}
           color={COLORS.rating}
-          style={{ marginRight: 2 }}
+          style={styles.star}
         />
       );
     })}
@@ -35,7 +41,6 @@ const StarRating = ({ rating }) => (
 const FilterBar = ({ selectedRating, setSelectedRating }) => {
   const options = [5, 4, 3, 2, 1, "All"];
   return (
-    // HEADER STARS / FILTER BARS
     <View style={styles.filterBar}>
       {options.map((opt) => (
         <TouchableOpacity
@@ -60,98 +65,190 @@ const FilterBar = ({ selectedRating, setSelectedRating }) => {
   );
 };
 
-const ReviewCard = ({ item }) => (
-  // REVIEWS
-  <View style={styles.card}>
-    <View style={styles.header}>
-      <Image
-        source={{ uri: item.profile }}
-        style={styles.avatar}
-        defaultSource={require("../../assets/images/profile-img.png")}
-      />
+const ReviewCard = ({ item, openImagePreview }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
 
-      <View style={{ flex: 1 }}>
-        <Text style={styles.name}>{item.userName}</Text>
-        <StarRating rating={item.rating} />
+  // normalize to array
+  const commentImgs = Array.isArray(item.commentImgs)
+    ? item.commentImgs
+    : item.commentImgs
+    ? [item.commentImgs]
+    : [];
+
+  // slide width matches image width
+  const slideWidth = screenWidth - 32;
+
+  const onScroll = (e) => {
+    const idx = Math.round(e.nativeEvent.contentOffset.x / slideWidth);
+    setActiveIndex(idx);
+  };
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <Image
+          source={{ uri: item.profile }}
+          style={styles.avatar}
+          defaultSource={require("../../assets/images/profile-img.png")}
+        />
+        <View style={styles.headerText}>
+          <Text style={styles.name}>{item.userName}</Text>
+          <StarRating rating={item.rating} />
+        </View>
       </View>
-    </View>
-    <Text style={styles.text}>{item.comment}</Text>
 
-    {/* IMAGE REVIEW */}
-    {item.commentImg && (
-      <Image source={{ uri: item.commentImg }} style={styles.commentImage} />
-    )}
-  </View>
-);
+      <Text style={styles.text}>{item.comment}</Text>
+
+      {commentImgs.length > 0 && (
+        <>
+          <FlatList
+            data={commentImgs}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(_, idx) => idx.toString()}
+            renderItem={({ item: uri }) => (
+              <TouchableOpacity
+                style={styles.carouselItem}
+                onPress={() => openImagePreview(uri)}
+              >
+                <Image
+                  source={{ uri }}
+                  style={[styles.commentImage, { width: slideWidth }]}
+                />
+              </TouchableOpacity>
+            )}
+            onScroll={onScroll}
+            scrollEventThrottle={16}
+            style={styles.carousel}
+          />
+
+          {commentImgs.length > 1 && (
+            <View style={styles.dotsContainer}>
+              {commentImgs.map((_, idx) => (
+                <View
+                  key={idx}
+                  style={[styles.dot, idx === activeIndex && styles.activeDot]}
+                />
+              ))}
+            </View>
+          )}
+        </>
+      )}
+    </View>
+  );
+};
 
 export default function Reviews() {
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [selectedRating, setSelectedRating] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
+
+  const getReviewsDetails = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("http://192.168.100.10:5000/products");
+      setReviews(response.data);
+    } catch (error) {
+      console.error("Error fetching reviews:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getReviewsDetails();
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
-    axios
-      .get("http://192.168.100.10:5000/products")
-      .then((res) => {
-        setReviews(res.data);
-        setFilteredReviews(res.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching reviews:", error);
-        setLoading(false);
-      });
+    getReviewsDetails();
   }, []);
 
   useEffect(() => {
     if (selectedRating === "All") {
       setFilteredReviews(reviews);
     } else {
-      const filtered = reviews.filter((item) => item.rating === selectedRating);
-      setFilteredReviews(filtered);
+      setFilteredReviews(reviews.filter((r) => r.rating === selectedRating));
     }
-  }, [selectedRating, reviews]);
+  }, [reviews, selectedRating]);
+
+  const openImagePreview = (uri) => {
+    setSelectedImageUri(uri);
+    setPreviewVisible(true);
+  };
+  const closeImagePreview = () => {
+    setPreviewVisible(false);
+    setSelectedImageUri(null);
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <HeaderBar title="Reviews" confirmBack={false} />
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#116149" />
-        </View>
-      ) : (
-        <>
-          <FilterBar
-            selectedRating={selectedRating}
-            setSelectedRating={setSelectedRating}
+      <FilterBar
+        selectedRating={selectedRating}
+        setSelectedRating={setSelectedRating}
+      />
+
+      <FlatList
+        data={filteredReviews}
+        renderItem={({ item }) => (
+          <ReviewCard item={item} openImagePreview={openImagePreview} />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.darkGreen]}
+            tintColor={COLORS.darkGreen}
+            progressBackgroundColor={COLORS.lightgreen}
           />
-          <FlatList
-            data={filteredReviews}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item) => item.userId.toString()}
-            renderItem={({ item }) => <ReviewCard item={item} />}
-            contentContainerStyle={styles.container}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No reviews found.</Text>
-            }
+        }
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No reviews found.</Text>
+        }
+      />
+
+      <Modal visible={previewVisible} transparent animationType="fade">
+        <Pressable style={styles.modalOverlay} onPress={closeImagePreview}>
+          <Image
+            source={{ uri: selectedImageUri }}
+            style={styles.modalImage}
+            resizeMode="contain"
           />
-        </>
-      )}
+        </Pressable>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
+  screen: { flex: 1 },
+  container: { padding: 16 },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
+  ratingRow: { flexDirection: "row" },
+  star: { marginRight: 2 },
   filterBar: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -164,32 +261,30 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: COLORS.cardBg,
   },
-  selectedFilter: {
-    backgroundColor: COLORS.xchangoColor,
-  },
+  selectedFilter: { backgroundColor: COLORS.xchangoColor },
   filterText: {
     fontSize: 13,
     color: COLORS.primary,
     fontWeight: "500",
   },
-  selectedFilterText: {
-    color: COLORS.rating,
-  },
+  selectedFilterText: { color: COLORS.rating },
   card: {
-    marginBottom: 10,
-    backgroundColor: COLORS.lightgreen,
-    padding: 12,
+    marginBottom: 16,
+    backgroundColor: COLORS.mainBackgroundColor,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    paddingTop: 15,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 5,
+    paddingHorizontal: 10,
   },
+  headerText: { flex: 1 },
   avatar: {
     width: 38,
     height: 38,
@@ -197,24 +292,48 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: "#eee",
   },
-  name: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
+  name: { fontWeight: "bold", fontSize: 14 },
   text: {
     fontSize: 13,
     color: "#333",
     marginTop: 6,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
   commentImage: {
-    width: "100%",
-    height: 180,
+    height: 200,
     borderRadius: 8,
-    marginTop: 10,
+  },
+  dotsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10,
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: COLORS.cardBg,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: COLORS.darkGreen,
+    width: 8,
+    height: 8,
   },
   emptyText: {
     textAlign: "center",
     marginTop: 20,
     color: "#999",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalImage: {
+    width: "90%",
+    height: "70%",
   },
 });

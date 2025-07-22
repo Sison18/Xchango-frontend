@@ -34,7 +34,7 @@ export default function ChatList({ products }) {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 80, paddingTop: 10 }}
+        contentContainerStyle={{ paddingBottom: 50, paddingTop: 10 }}
       />
     </View>
   );

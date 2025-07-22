@@ -10,7 +10,7 @@ export default function SplashScreen() {
       <StatusBar style="dark" translucent />
 
       <LinearGradient colors={["#C5F6D0", "#F1F1F1"]} style={styles.container}>
-        <Link href="/trade" asChild>
+        <Link href="/home" asChild>
           <TouchableOpacity>
             {/* LOGO IMAGE */}
             <Animatable.Image
