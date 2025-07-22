@@ -14,15 +14,25 @@ import {
   Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as Location from "expo-location";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import InputField from "../../components/textField/inputField";
 import { COLORS } from "../../assets/constants/theme";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { getToken } from "../../BACKEND/UTILS/secureStore";
+import {
+  updateProfile,
+  updateProfileByEmail,
+} from "../../BACKEND/API'S/auth";
 
 const FillUpScreen = () => {
   const headerHeight = useHeaderHeight();
+  const { email } = useLocalSearchParams();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [address, setAddress] = useState({
@@ -71,6 +81,35 @@ const FillUpScreen = () => {
     }
   };
 
+  //UPDATED 
+  const handleDone = async () => {
+    try {
+      const profileData = {
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phoneNumber,
+        birthdate: date?.toISOString().split("T")[0],
+        street: address.street,
+        city: address.city,
+        barangay: address.barangay,
+        region_or_province: address.region,
+        postal_code: address.postalCode,
+      };
+
+      if (email) {
+        await updateProfileByEmail({ email, ...profileData });
+      } else {
+        const token = await getToken();
+        await updateProfile(token, profileData);
+      }
+
+      router.push("./successfulSignup");
+    } catch (error) {
+      console.error("Profile update failed:", error.message);
+      Alert.alert("Error", "Could not submit profile data.");
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -85,97 +124,98 @@ const FillUpScreen = () => {
         >
           <Text style={styles.title}>Fill up</Text>
           <Text style={styles.titleQuote}>
-            Let&apos;s get to know you better! Complete your details to get
-            started.
+            Let&apos;s get to know you better! Complete your details to get started.
           </Text>
 
+          {/* FULL NAME */}
           <Animated.View entering={FadeInDown.delay(100)}>
             <Text style={styles.txtSection}>Fullname</Text>
-            <InputField placeholder="First Name" {...inputProps} />
-            <InputField placeholder="Last Name" {...inputProps} />
+            <InputField
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+              {...inputProps}
+            />
+            <InputField
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+              {...inputProps}
+            />
           </Animated.View>
 
+          {/* PHONE NUMBER */}
           <Animated.View entering={FadeInDown.delay(200)}>
             <Text style={styles.txtSection}>Phone Number</Text>
             <InputField
               placeholder="#"
               keyboardType="phone-pad"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
               {...inputProps}
             />
           </Animated.View>
 
+          {/* BIRTHDATE */}
           <Animated.View entering={FadeInDown.delay(300)}>
             <Text style={styles.txtSection}>Date of birth</Text>
-            <Pressable
-              style={styles.datePicker}
-              onPress={() => setShowPicker(true)}
-            >
-              <Text
-                style={[styles.datePickerText, !date && styles.placeholderText]}
-              >
+            <Pressable style={styles.datePicker} onPress={() => setShowPicker(true)}>
+              <Text style={[styles.datePickerText, !date && styles.placeholderText]}>
                 {date ? date.toLocaleDateString() : "Birth Date"}
               </Text>
             </Pressable>
           </Animated.View>
 
+          {/* ADDRESS */}
           <Text style={styles.txtSection}>Address</Text>
-
           <Animated.View entering={FadeInDown.delay(400)}>
             <InputField
               placeholder="Region or Province"
               value={address.region}
-              onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, region: text }))
-              }
+              onChangeText={(text) => setAddress((prev) => ({ ...prev, region: text }))}
               {...inputProps}
             />
             <InputField
               placeholder="City"
               value={address.city}
-              onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, city: text }))
-              }
+              onChangeText={(text) => setAddress((prev) => ({ ...prev, city: text }))}
               {...inputProps}
             />
             <InputField
               placeholder="Barangay"
               value={address.barangay}
-              onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, barangay: text }))
-              }
+              onChangeText={(text) => setAddress((prev) => ({ ...prev, barangay: text }))}
               {...inputProps}
             />
             <InputField
               placeholder="Street"
               value={address.street}
-              onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, street: text }))
-              }
+              onChangeText={(text) => setAddress((prev) => ({ ...prev, street: text }))}
               {...inputProps}
             />
             <InputField
               placeholder="Postal Code"
               keyboardType="number-pad"
               value={address.postalCode}
-              onChangeText={(text) =>
-                setAddress((prev) => ({ ...prev, postalCode: text }))
-              }
+              onChangeText={(text) => setAddress((prev) => ({ ...prev, postalCode: text }))}
               {...inputProps}
             />
           </Animated.View>
 
+          {/* LOCATION BUTTON */}
           <TouchableOpacity style={styles.locationBtn} onPress={handleLocation}>
             <Text style={styles.locationBtnText}>🗺️ Use My Location</Text>
           </TouchableOpacity>
+           {/* NOTE CONTAINER */}
+             <View style={styles.noteContainer}>
+              <Text style={styles.noteText}>
+                📌 *Note: &quot;Use My Location&quot; helps autofill your
+                address, but it may not always be accurate or complete.
+              </Text>
+            </View>
 
-          <View style={styles.noteContainer}>
-            <Text style={styles.noteText}>
-              📌 *Note: &quot;Use My Location&quot; helps autofill your address,
-              but it may not always be accurate or complete.
-            </Text>
-          </View>
 
-          {/* Date Pickers */}
+          {/* DATE PICKER */}
           {showPicker && Platform.OS === "android" && (
             <DateTimePicker
               value={date || new Date()}
@@ -195,10 +235,7 @@ const FillUpScreen = () => {
                     onChange={handleDateChange}
                     themeVariant="light"
                   />
-                  <Pressable
-                    style={styles.IOSdoneButton}
-                    onPress={() => setShowPicker(false)}
-                  >
+                  <Pressable style={styles.IOSdoneButton} onPress={() => setShowPicker(false)}>
                     <Text style={styles.IOSdoneButtonText}>Done</Text>
                   </Pressable>
                 </View>
@@ -206,10 +243,8 @@ const FillUpScreen = () => {
             </Modal>
           )}
 
-          <TouchableOpacity
-            style={styles.doneBtn}
-            onPress={() => router.push("./successfulSignup")}
-          >
+          {/* DONE BUTTON */}
+          <TouchableOpacity style={styles.doneBtn} onPress={handleDone}>
             <Text style={styles.btnText}>Done</Text>
           </TouchableOpacity>
         </ScrollView>

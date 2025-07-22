@@ -16,6 +16,7 @@ import InputField from "../../components/textField/passwordField";
 import { StatusBar } from "expo-status-bar";
 import HeaderBar from "../../components/header";
 
+//TODO : May api backend na do this before deployment
 export default function ChangePasswordScreen() {
   const [form, setForm] = useState({
     oldPassword: "",

@@ -9,7 +9,7 @@ import {
   Platform,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { COLORS } from "../../../../XChangoProject/assets/constants/theme";
+import { COLORS } from "../../../assets/constants/theme.js";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { router } from "expo-router";
 import React from "react";

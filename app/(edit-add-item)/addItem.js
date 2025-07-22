@@ -1,31 +1,39 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Image,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-  Modal,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native"; //
+import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useState } from "react";
+import {
+  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import { getMe } from "../../BACKEND/API'S/auth";
+import { postItem } from "../../BACKEND/API'S/items";
+import { getToken } from "../../BACKEND/UTILS/secureStore";
 import { COLORS } from "../../assets/constants/theme";
+import CustomPicker from "../../components/CustomPicker";
+import HeaderBar from "../../components/header";
 import InputField from "../../components/textField/inputField";
 import Wishlist from "../../components/wishlist";
-import CustomPicker from "../../components/CustomPicker";
-import { router } from "expo-router";
-import axios from "axios";
 import useBackConfirmation from "../../hooks/cancelConfirmation";
-import { StatusBar } from "expo-status-bar";
-import HeaderBar from "../../components/header";
 
+const MAX_TOTAL_IMAGE_SIZE_MB = 5;
+
+//UPDATED with backend
 export default function ProductForm() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -33,37 +41,78 @@ export default function ProductForm() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedTradeOption, setSelectedTradeOption] = useState("");
   const [imageUris, setImageUris] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [location, setLocation] = useState("");
+  const [uploading, setUploading] = useState(false); // PANGTEST KANINA Maintained for future use
+
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
-  const [location, setLocation] = useState("");
 
+  // UPDATED Automatically fetch location every time pumupunta sa item post screen
+  useFocusEffect(
+    useCallback(() => {
+      loadUserLocation();
+    }, [])
+  );
+
+  // UPDATED Auto-fill location based on /me API gamit yung users info
+ const loadUserLocation = async () => {
+  try {
+    const token = await getToken();
+    const user = await getMe(token);
+    console.log("User from /me:", user); // DEBUG done
+
+    // UPDATED adressS fields from users info
+    const addr = {
+      street: user.street,
+      barangay: user.barangay,
+      city: user.city,
+      region_or_province: user.region_or_province,
+      postal_code: user.postal_code,
+    };
+
+    if (addr.street && addr.city) { 
+      const fullAddress = `${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.region_or_province}, ${addr.postal_code}`;
+      console.log("Full address:", fullAddress); // DEBUG done
+      setLocation(fullAddress);
+    }
+  } catch (error) {
+    console.log("Failed to load user location", error);
+  }
+};
+
+
+  // UPDATED Compress and add selected images para di mabigat sa db
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Photos,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       selectionLimit: 0,
       quality: 1,
-      allowsEditing: false,
     });
 
     if (!result.canceled) {
-      const uris = result.assets.map((asset) => asset.uri);
+      const compressedAssets = await Promise.all(
+        result.assets.map((asset) =>
+          ImageManipulator.manipulateAsync(asset.uri, [], {
+            compress: 0.6,
+            format: ImageManipulator.SaveFormat.JPEG,
+          })
+        )
+      );
+      const uris = compressedAssets.map((asset) => asset.uri);
       setImageUris((prev) => [...prev, ...uris]);
     }
   };
 
-  const handlePost = async () => {
-    if (
-      !name ||
-      !description ||
-      !price ||
-      !selectedStatus ||
-      !selectedTradeOption ||
-      imageUris.length === 0
-    ) {
-      Alert.alert("Missing Info", "Please complete all fields.");
-      return;
+  // Get total compressed image size in MB
+  const getTotalImageSizeMB = async () => {
+    let totalSize = 0;
+    for (let uri of imageUris) {
+      const info = await FileSystem.getInfoAsync(uri);
+      totalSize += info.size;
     }
+    return totalSize / (1024 * 1024);
   };
 
   const removeImage = (index) => {
@@ -82,30 +131,77 @@ export default function ProductForm() {
     setSelectedImageUri(null);
   };
 
-  const [product, setProduct] = useState(null);
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setSelectedStatus("");
+    setSelectedTradeOption("");
+    setImageUris([]);
+    setWishlistItems([]);
+    setLocation(""); // UPDATED remove if avoid clearing the lovation in setForm
+  };
 
-  useEffect(() => {
-    getProductsDetails();
-  }, []);
-
-  useEffect(() => {
-    if (product?.address?.[0]) {
-      const addr = product.address[0];
-      setLocation(
-        `${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.regionProvince}, ${addr.postalCode}`
-      );
+  //  UPDATEDUpload item to backend with FormData
+  const handlePost = async () => {
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !selectedStatus ||
+      !selectedTradeOption ||
+      !location ||
+      imageUris.length === 0
+    ) {
+      Alert.alert("Missing Info", "Please complete all fields.");
+      return;
     }
-  }, [product]);
 
-  const getProductsDetails = async () => {
-    const URL = `http://192.168.100.10:5000/products`;
     try {
-      const response = await axios.get(URL);
-      if (response.data.length > 0) {
-        setProduct(response.data[0]);
+      const totalSize = await getTotalImageSizeMB();
+      if (totalSize > MAX_TOTAL_IMAGE_SIZE_MB) {
+        Alert.alert(
+          "Upload too large",
+          `Total image size must be under ${MAX_TOTAL_IMAGE_SIZE_MB}MB`
+        );
+        return;
       }
+
+      setUploading(true); // for testing para makita ko if may progress Used for future spinner/progress logic
+
+      const formData = new FormData();
+
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("estimated_price", price);
+      formData.append("item_status", selectedStatus);
+      formData.append("transaction_option", selectedTradeOption);
+      formData.append("location", location);
+      formData.append("wishlist_items", JSON.stringify(wishlistItems));
+
+      imageUris.forEach((uri) => {
+        const fileName = uri.split("/").pop();
+        const match = /\.(\w+)$/.exec(fileName || "");
+        const type = match ? `image/${match[1]}` : "image";
+
+        formData.append("item_images", {
+          uri,
+          name: fileName,
+          type,
+        });
+      });
+
+      // UPDATED API POST BACKEND CALL IT
+      await postItem(formData);
+
+      Alert.alert("Success", "Item posted successfully!");
+      resetForm();
+      router.push("/home");
     } catch (error) {
-      console.error("Error fetching product:", error.message);
+      console.error("Post item error:", error);
+      Alert.alert("Error", "Failed to post item.");
+    } finally {
+      setUploading(false); // Upload complete pag nag false
     }
   };
 
@@ -114,31 +210,22 @@ export default function ProductForm() {
   return (
     <>
       <StatusBar style="light" translucent />
-      {/* HEADER */}
       <HeaderBar title="Post" />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        {/* PARENT CONTAINER */}
         <KeyboardAvoidingView
-          style={styles.keyboardAvoiding}
+          style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -40}
         >
-          {/* SCROLL CONTAINER */}
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}
-          >
-            {/* CONTENT CONTAINER */}
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.contentContainer}>
-              {/* IMAGE INPUT */}
+              {/* IMAGE UPLOAD PREVIEW */}
               <View style={styles.imageBox}>
                 {imageUris.length > 0 ? (
                   <>
                     <ScrollView
                       horizontal
-                      showsHorizontalScrollIndicator
-                      contentContainerStyle={styles.imageScrollContainer}
+                      showsHorizontalScrollIndicator={false}
                     >
                       {imageUris.map((uri, index) => (
                         <View key={index} style={styles.imageContainer}>
@@ -188,29 +275,22 @@ export default function ProductForm() {
                 )}
               </View>
 
-              {/* PRODUCT NAME */}
+              {/* FORM FIELDS */}
               <InputField
                 placeholder="Name of product"
-                placeholderTextColor={COLORS.placeholder}
-                onChangeText={setName}
                 value={name}
+                onChangeText={setName}
                 inputStyle={styles.nameDescriptionPriceStyle}
               />
-
-              {/* DESCRIPTION */}
               <InputField
                 placeholder="Description"
-                placeholderTextColor={COLORS.placeholder}
-                onChangeText={setDescription}
                 value={description}
+                onChangeText={setDescription}
+                multiline
+                numberOfLines={3}
                 inputStyle={styles.nameDescriptionPriceStyle}
-                multiline={true}
-                numberOfLines={2}
               />
-
-              {/* STATUS & PRICE CONTAINER */}
               <View style={styles.statusPriceContainer}>
-                {/* STATUS */}
                 <View style={styles.halfInput}>
                   <CustomPicker
                     placeholder="Select item status"
@@ -226,20 +306,17 @@ export default function ProductForm() {
                     ]}
                   />
                 </View>
-                {/* PRICE */}
                 <View style={styles.halfInput}>
                   <InputField
                     placeholder="Estimated Price"
-                    placeholderTextColor={COLORS.placeholder}
-                    keyboardType="numeric"
-                    onChangeText={setPrice}
                     value={price}
+                    onChangeText={setPrice}
+                    keyboardType="numeric"
                     inputStyle={styles.nameDescriptionPriceStyle}
                   />
                 </View>
               </View>
 
-              {/* TRANSACTION */}
               <CustomPicker
                 placeholder="Select transaction option"
                 selectedValue={selectedTradeOption}
@@ -251,36 +328,38 @@ export default function ProductForm() {
                 ]}
               />
 
-              {/* LOCATION */}
               <InputField
                 value={location}
-                onChangeText={(text) => setLocation(text)}
+                onChangeText={setLocation}
                 placeholder="Enter location"
                 multiline
                 inputStyle={styles.locationStyle}
+                editable={true} //UPDATED set false pag read only or di edited 
               />
 
-              {/* WISHLIST */}
-              <Wishlist />
+              <Wishlist
+                selectedItems={wishlistItems}
+                onChange={setWishlistItems}
+              />
 
+              {/* POST + CANCEL */}
               <View style={styles.postCancelContainer}>
-                {/* POST BUTTON */}
-                <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
-                  <Text style={styles.postButtonText}>POST</Text>
+                <TouchableOpacity
+                  style={[styles.postBtn, uploading && { opacity: 0.6 }]}
+                  onPress={handlePost}
+                  disabled={uploading}
+                >
+                  <Text style={styles.postButtonText}>
+                    {uploading ? "Posting..." : "POST"}
+                  </Text>
                 </TouchableOpacity>
-
-                {/* CANCEL BUTTON */}
                 <TouchableOpacity
                   style={styles.cancelBtn}
                   onPress={() =>
-                    Alert.alert(
-                      "Cancel confirmation",
-                      "Are you sure you want to cancel this post?",
-                      [
-                        { text: "No", style: "cancel" },
-                        { text: "Yes", onPress: () => router.back() },
-                      ]
-                    )
+                    Alert.alert("Cancel confirmation", "Are you sure?", [
+                      { text: "No", style: "cancel" },
+                      { text: "Yes", onPress: () => router.back() },
+                    ])
                   }
                 >
                   <Text style={styles.postButtonText}>CANCEL</Text>
@@ -291,7 +370,7 @@ export default function ProductForm() {
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
 
-      {/* IMAGE VIEW */}
+      {/* IMAGE PREVIEW MODAL */}
       <Modal visible={previewVisible} transparent animationType="fade">
         <Pressable style={styles.modalOverlay} onPress={closeImagePreview}>
           <Image
@@ -306,15 +385,7 @@ export default function ProductForm() {
 }
 
 const styles = StyleSheet.create({
-  // PARENT CONTAINER
-  scrollContainer: {
-    paddingBottom: 50,
-    paddingHorizontal: 35,
-  },
-  keyboardAvoiding: {
-    flex: 1,
-  },
-  // IMAGE INPUT
+  scrollContainer: { paddingBottom: 50, paddingHorizontal: 35 },
   imageBox: {
     borderWidth: 1,
     borderColor: COLORS.placeholder,
@@ -326,21 +397,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 30,
   },
-  imageScrollContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingVertical: 10,
-  },
-  imageContainer: {
-    position: "relative",
-    marginRight: 10,
-  },
-  uploadedImage: {
-    width: 180,
-    height: 180,
-    borderRadius: 8,
-    resizeMode: "cover",
-  },
+  imageContainer: { position: "relative", marginRight: 10 },
+  uploadedImage: { width: 180, height: 180, borderRadius: 8 },
   deleteButton: {
     position: "absolute",
     top: 5,
@@ -349,37 +407,17 @@ const styles = StyleSheet.create({
     backgroundColor: "lightgray",
     borderRadius: 100,
   },
-
-  // ADD MORE IMAGE
-  addMoreBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-  },
+  addMoreBtn: { flexDirection: "row", alignItems: "center", marginTop: 10 },
   addMoreText: {
     marginLeft: 6,
     color: COLORS.darkGreen,
     fontSize: 14,
     fontWeight: "600",
   },
-
-  // PRODUCT NAME, DESCRIPTION, PRICE
   nameDescriptionPriceStyle: {
     borderColor: COLORS.placeholder,
     width: "100%",
     fontSize: 14,
-  },
-
-  // LOCATION
-  location: {
-    fontSize: 14,
-    borderWidth: 1,
-    backgroundColor: COLORS.textbox,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: COLORS.primary,
-    borderColor: COLORS.placeholder,
-    borderRadius: 7,
   },
   locationStyle: {
     borderColor: COLORS.placeholder,
@@ -387,24 +425,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 30,
   },
-
-  // STATUS & PRICE CONTAINER
   statusPriceContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 10,
     marginVertical: 10,
   },
-  halfInput: {
-    flex: 1,
-  },
-
+  halfInput: { flex: 1 },
   postCancelContainer: {
     flexDirection: "row-reverse",
     justifyContent: "center",
     gap: 15,
   },
-  // POST BUTTON
   postBtn: {
     backgroundColor: COLORS.darkGreen,
     width: "45%",
@@ -417,8 +449,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
-  // CANCEL BUTTON
   cancelBtn: {
     backgroundColor: COLORS.placeholder,
     width: "45%",
@@ -426,19 +456,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-
-  // IMAGE VIEW
-  imageIconTextContainer: {
-    alignItems: "center",
-  },
+  imageIconTextContainer: { alignItems: "center" },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.8)",
     justifyContent: "center",
     alignItems: "center",
   },
-  modalImage: {
-    width: "90%",
-    height: "80%",
-  },
+  modalImage: { width: "90%", height: "80%" },
+  contentContainer: { paddingBottom: 50 },
 });

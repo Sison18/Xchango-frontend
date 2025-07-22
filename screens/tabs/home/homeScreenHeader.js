@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { COLORS } from "../../../assets/constants/theme";
+import { COLORS } from "../../../assets/constants/theme.js";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React from "react";

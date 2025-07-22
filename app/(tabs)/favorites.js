@@ -15,7 +15,7 @@ export default function FavoriteScreen() {
   }, []);
 
   const getProductsDetails = async () => {
-    const URL = `http://192.168.100.10:5000/products`;
+    const URL = `http://192.168.100.18:5000/products`;
     try {
       const response = await axios.get(URL);
       setProduct(response.data);

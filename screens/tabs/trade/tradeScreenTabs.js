@@ -1,13 +1,44 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ProductList from "./productList";
+import { getItem } from "../../../BACKEND/API'S/items";
 import { COLORS } from "../../../assets/constants/theme";
+import { ActivityIndicator, View } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function TradeScreenTabs({ products }) {
-  const available = products.filter((item) => item.status === "Available");
-  const pending = products.filter((item) => item.status === "Pending Trade");
+export default function TradeScreenTabs() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // UPDATED Fetch all user items from the backend
+  const fetchItems = useCallback(async () => {
+    try {
+      setLoading(true);
+      const items = await getItem();
+      setProducts(items);
+    } catch (error) {
+      console.error("Failed to fetch user items", error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchItems(); // Initial fetch on mount
+  }, [fetchItems]);
+
+  // FILTERIXATION by availability status
+  const available = products.filter(item => item.availability_status === "available");
+  const pending = products.filter(item => item.availability_status === "pending");
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#333" />
+      </View>
+    );
+  }
 
   return (
     <Tab.Navigator
@@ -31,14 +62,12 @@ export default function TradeScreenTabs({ products }) {
         tabBarInactiveTintColor: COLORS.placeholder,
       }}
     >
-      {/* AVAILABLE */}
+      {/* Pass refetch function to child */}
       <Tab.Screen name="Available">
-        {() => <ProductList status={available} />}
+        {() => <ProductList status={available} onDelete={fetchItems} />}
       </Tab.Screen>
-
-      {/* PENDING TRADE */}
       <Tab.Screen name="Pending Trade">
-        {() => <ProductList status={pending} />}
+        {() => <ProductList status={pending} onDelete={fetchItems} />}
       </Tab.Screen>
     </Tab.Navigator>
   );

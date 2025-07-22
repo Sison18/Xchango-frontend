@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, Dimensions, Platform } from "react-native";
-import AppIntroSlider from "react-native-app-intro-slider";
-import { COLORS, imageMap } from "../../assets/constants/theme";
-import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
-import { router } from "expo-router";
-import slides from "../../assets/data/welcome-slides.json";
 import { LinearGradient } from "expo-linear-gradient";
-import useDoubleBackExit from "../../hooks/andoidUseDoubleBackExit";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Dimensions, Platform, StyleSheet, Text, View } from "react-native";
+import AppIntroSlider from "react-native-app-intro-slider";
+import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
+import { COLORS, imageMap } from "../../assets/constants/theme";
+import slides from "../../assets/data/welcome-slides.json";
+import useDoubleBackExit from "../../hooks/andoidUseDoubleBackExit";
 
 const { height } = Dimensions.get("window");
 

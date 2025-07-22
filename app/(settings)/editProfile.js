@@ -1,26 +1,35 @@
-import React, { useState, useEffect } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useFocusEffect } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useState } from "react";
 import {
-  View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  Image,
-  Platform,
-  KeyboardAvoidingView,
-  ScrollView,
-  Modal,
-  Pressable,
+  View,
 } from "react-native";
-import axios from "axios";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import InputField from "../../components/textField/inputField";
-import { COLORS } from "../../assets/constants/theme";
-import { LinearGradient } from "expo-linear-gradient";
-import HeaderBar from "../../components/header";
-import { StatusBar } from "expo-status-bar";
 
+import { COLORS } from "../../assets/constants/theme";
+import {
+  getMe,
+  updateProfile,
+  updateProfilePicture,
+} from "../../BACKEND/API'S/auth.js";
+import { getToken } from "../../BACKEND/UTILS/secureStore.js";
+import HeaderBar from "../../components/header";
+import InputField from "../../components/textField/inputField";
+
+//UPDATED
 export default function EditProfileScreen() {
   const [form, setForm] = useState({
     firstName: "",
@@ -37,45 +46,64 @@ export default function EditProfileScreen() {
   const [showPicker, setShowPicker] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
 
-  useEffect(() => {
-    axios
-      .get("http://192.168.100.10:5000/products")
-      .then((res) => {
-        const data = res.data[0];
-        const profile = data.profile;
-        const fn = data.firstname;
-        const ln = data.lastname;
-        const pn = data.phoneNumber;
-        const bd = data.birthday;
-        const address = data.address?.[0];
+  //UPDATED
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUser = async () => {
+        try {
+          const token = await getToken();
+          const res = await getMe(token);
 
-        setForm({
-          firstName: fn || "",
-          lastName: ln || "",
-          phone: pn || "",
-          birthDate: bd ? new Date(bd) : new Date(),
-          region: address?.regionProvince || "",
-          city: address?.city || "",
-          barangay: address?.barangay || "",
-          street: address?.street || "",
-          postal: address?.postalCode?.toString() || "",
-        });
+          setForm({
+            firstName: res.first_name || res.firstname || "",
+            lastName: res.last_name || res.lastname || "",
+            phone: res.phone_number || res.phone || "",
+            birthDate: res.birthdate ? new Date(res.birthdate) : new Date(),
+            region: res.region_or_province || "",
+            city: res.city || "",
+            barangay: res.barangay || "",
+            street: res.street || "",
+            postal: res.postal_code?.toString() || "",
+          });
 
-        if (profile?.profile) {
-          setProfileImage(profile.profile);
+          if (res.profile_picture) {
+            setProfileImage(res.profile_picture);
+          }
+        } catch (err) {
+          console.log("Error fetching profile:", err.message);
         }
-      })
-      .catch((err) => {
-        console.log("Error fetching profile:", err.message);
-      });
-  }, []);
+      };
 
+      fetchUser();
+    }, [])
+  );
+
+  //UPDATED seperate upload for profile kase what if profilepic lang gsto ichange ng user
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Photos,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
     });
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const image = result.assets[0];
+      setProfileImage(image.uri);
+
+      try {
+        const token = await getToken();
+        const response = await updateProfilePicture(token, image);
+        setProfileImage(response.user.profile_picture);
+        Alert.alert("Success", "Profile picture updated!");
+      } catch (error) {
+        console.log("Image upload failed", {
+          message: error.message,
+          responseData: error.response?.data,
+          status: error.response?.status,
+        });
+        Alert.alert("Upload Failed", "Could not upload profile picture.");
+      }
     }
   };
 
@@ -88,11 +116,34 @@ export default function EditProfileScreen() {
     if (selectedDate) handleChange("birthDate", selectedDate);
   };
 
+  //UPDATED eto naman para sa profile user info hiwalay sya sa upload profile pic
+  const handleSubmit = async () => {
+    try {
+      const token = await getToken();
+      const payload = {
+        first_name: form.firstName,
+        last_name: form.lastName,
+        phone_number: form.phone,
+        birthdate: form.birthDate,
+        street: form.street,
+        city: form.city,
+        region_or_province: form.region,
+        barangay: form.barangay,
+        postal_code: form.postal,
+      };
+
+      await updateProfile(token, payload);
+      Alert.alert("Success", "Profile updated successfully!");
+    } catch (error) {
+      console.log("Update profile failed:", error.message);
+      Alert.alert("Error", "Could not update profile.");
+    }
+  };
+
   return (
     <>
       <StatusBar style="light" translucent />
       <HeaderBar title="Edit Profile" confirmBack={false} />
-
       <View style={styles.container}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -163,9 +214,7 @@ export default function EditProfileScreen() {
               </Text>
             </Pressable>
 
-            <Text style={styles.addressText}>
-              Address(Region or Province,City,Barangay,Street,Postal Code)
-            </Text>
+            <Text style={styles.addressText}>Address</Text>
             <InputField
               placeholder="Region / Province"
               value={form.region}
@@ -228,6 +277,10 @@ export default function EditProfileScreen() {
                 </View>
               </Modal>
             )}
+            {/* UPDATED nag add ako ng save button men */}
+            <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
+              <Text style={styles.saveButtonText}>Save Changes</Text>
+            </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
@@ -251,25 +304,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  addressText: {
-    fontSize: 13,
-    fontWeight: "bold",
-    marginLeft: 3,
-    marginBottom: 5,
-    color: COLORS.primary,
-  },
-  header: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f1f1f1",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
   scrollContainer: {
     padding: 20,
   },
@@ -292,6 +326,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#444",
     padding: 8,
     borderRadius: 20,
+  },
+  addressText: {
+    fontSize: 13,
+    fontWeight: "bold",
+    marginLeft: 3,
+    marginBottom: 5,
+    color: COLORS.primary,
   },
   datePicker: {
     borderWidth: 0.4,
@@ -331,6 +372,18 @@ const styles = StyleSheet.create({
   },
   IOSdoneButtonText: {
     color: COLORS.mainBackgroundColor,
+    fontWeight: "600",
+  },
+  saveButton: {
+    backgroundColor: COLORS.darkGreen,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 40,
+  },
+  saveButtonText: {
+    color: "#fff",
     fontWeight: "600",
   },
 });

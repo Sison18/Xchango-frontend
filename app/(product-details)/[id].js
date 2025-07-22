@@ -43,7 +43,7 @@ export default function ProductsDetails() {
   const fetchProductDetails = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.100.10:5000/products/${id}`
+        `http://192.168.100.18:5000/products/${id}`
       );
       setProduct(response.data);
     } catch (error) {

@@ -8,7 +8,8 @@ import {
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { COLORS } from "../../../XChangoProject/assets/constants/theme";
+import { COLORS } from "../../assets/constants/theme.js";
+  
 import { router } from "expo-router";
 
 export default function BottomBar() {

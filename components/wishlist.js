@@ -1,26 +1,30 @@
-import React, { useState } from "react";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useState } from "react";
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { COLORS } from "../assets/constants/theme";
 
-export default function Wishlist() {
+//UPDATED
+export default function Wishlist({ selectedItems = [], onChange }) {
   const [text, setText] = useState("");
-  const [words, setWords] = useState([]);
 
+  //UPDATED
   const handleAdd = () => {
     if (text.trim() === "") return;
-    setWords((prev) => [...prev, text.trim()]);
+    const updatedList = [...selectedItems, text.trim()];
+    onChange(updatedList);
     setText("");
   };
 
+  //UPDATED
   const removeWord = (indexToRemove) => {
-    setWords((prevWords) => prevWords.filter((_, i) => i !== indexToRemove));
+    const updatedList = selectedItems.filter((_, i) => i !== indexToRemove);
+    onChange(updatedList);
   };
 
   return (
@@ -43,7 +47,7 @@ export default function Wishlist() {
 
       {/* WORDS TAG CONTAINER */}
       <View style={styles.tagContainer}>
-        {words.map((item, index) => (
+        {selectedItems.map((item, index) => (
           <View key={index} style={styles.wordContainer}>
             <Text style={styles.wordText}>{item}</Text>
             <TouchableOpacity onPress={() => removeWord(index)}>

@@ -1,22 +1,24 @@
-import React, { useState } from "react";
-import {
-  TouchableOpacity,
-  Text,
-  Modal,
-  Pressable,
-  View,
-  Platform,
-  StyleSheet,
-} from "react-native";
-import { Ionicons, FontAwesome5, AntDesign } from "@expo/vector-icons";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import Entypo from "@expo/vector-icons/Entypo";
-import { COLORS } from "../../../assets/constants/theme";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
+import { useState } from "react";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS } from "../../../assets/constants/theme";
+import { useAuth } from "../../../BACKEND/CONTEXTS/authContext";
 
 export default function ProfileSettings() {
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmation, setshowConfirmation] = useState(false);
+  const {logout} = useAuth();
 
   const handleLogoutPress = () => {
     setShowOptions(false);
@@ -163,13 +165,17 @@ export default function ProfileSettings() {
                   >
                     <Text style={styles.cancelTxt}>Cancel</Text>
                   </TouchableOpacity>
-
+                  
+                    {/* UPDATED sean - Use logout api to trigger logout backend and a
+                    if logout it will go sa login */}
                   <TouchableOpacity
                     style={styles.confirmBtn}
-                    onPress={() => {
-                      setshowConfirmation(false);
-                      router.replace("/login");
-                    }}
+                   onPress={async () => {
+                    setshowConfirmation(false);
+                    await logout();
+                    router.replace("/login");
+                   }}
+                    
                   >
                     <Text style={styles.confirmTxt}>Log Out</Text>
                   </TouchableOpacity>
@@ -181,7 +187,7 @@ export default function ProfileSettings() {
       </View>
     </>
   );
-}
+};      
 
 const styles = StyleSheet.create({
   // SETTINGS

@@ -1,28 +1,75 @@
+import { Link, router } from "expo-router";
+import { useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
+  Alert,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
-  TouchableWithoutFeedback,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { Link, router } from "expo-router";
 import * as Animatable from "react-native-animatable";
-import InputField from "../../components/textField/inputField";
-import { COLORS } from "../../assets/constants/theme";
-import PasswordField from "../../components/textField/passwordField";
-import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Line from "../../assets/constants/line";
+import { COLORS } from "../../assets/constants/theme";
+import { signup } from "../../BACKEND/API'S/auth"; 
+import InputField from "../../components/textField/inputField";
+import PasswordField from "../../components/textField/passwordField";
 
-const SignUpScreen = () => {
+// UPDATED SIGNUP SCREEN FUNCTIONALITY LOGIC (
+export const SignUpScreen = () => {
+  // FORM STATES
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // SIGNUP FUNCTION HANDLING
+  const handleSignup = async () => {
+    // Input validation
+    if (!email || !password || !confirmPassword) {
+      Alert.alert("Missing Fields", "Please fill in all fields");
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert("Password Mismatch", "Passwords do not match");
+      return;
+    }
+
+    try {
+      // API CALL
+      const response = await signup({ email, password });
+
+      Alert.alert(
+        "Signup Successful",
+        "Please complete your profile and verify your email through the link we sent.",
+        [
+          {
+            text: "Continue",
+            onPress: () => router.replace({ pathname: "/fillup", params: { email } }),
+          },
+        ]
+      );
+
+      // Clear fields
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error(error);
+      Alert.alert(
+        "Signup Failed",
+        error.response?.data?.message || "An error occurred during signup."
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        {/* PARENT CONTAINER */}
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
@@ -30,7 +77,6 @@ const SignUpScreen = () => {
         >
           {/* LOGO AND TITLE CONTAINER */}
           <View style={styles.logoTitleContainer}>
-            {/* LOGO */}
             <Animatable.Image
               animation="jello"
               duration={1500}
@@ -40,41 +86,36 @@ const SignUpScreen = () => {
               direction="alternate"
               source={require("../../assets/images/xchango-logo.png")}
             />
-
-            {/* TITLE */}
             <Text style={styles.title}>Create an Account</Text>
             <Text style={styles.titleQuote}>Your next trade starts here.</Text>
           </View>
 
           {/* CENTER CONTAINER */}
           <View>
-            {/* EMAIL */}
             <InputField
               placeholder="Email Address"
               placeholderTextColor={COLORS.placeholder}
               autoCapitalize="none"
               keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
             />
-
-            {/* PASSWORD */}
             <PasswordField
               placeholder="Password"
               placeholderTextColor={COLORS.placeholder}
               secureTextEntry={true}
+              value={password}
+              onChangeText={setPassword}
             />
-
-            {/* CONFIRM PASSWORD */}
             <PasswordField
-              placeholder="Confirm password"
+              placeholder="Confirm Password"
               placeholderTextColor={COLORS.placeholder}
               secureTextEntry={true}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
             />
 
-            {/* CREATE AN ACCOUNT BUTTON */}
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={() => router.push("./fillup")}
-            >
+            <TouchableOpacity style={styles.btn} onPress={handleSignup}>
               <Text style={styles.btnText}>Create an Account</Text>
             </TouchableOpacity>
 
@@ -95,7 +136,6 @@ const SignUpScreen = () => {
             </TouchableOpacity>
 
             <View>
-              {/* SIGN UP LINK */}
               <Text style={styles.signupText}>
                 Already have an account?{" "}
                 <Link href="./login" asChild>
@@ -113,13 +153,11 @@ const SignUpScreen = () => {
 export default SignUpScreen;
 
 const styles = StyleSheet.create({
-  // PARENT CONTAINER
   container: {
     flex: 1,
     padding: 20,
     justifyContent: "space-around",
   },
-  // LOGO AND TITLE
   logoTitleContainer: {
     alignItems: "center",
     marginTop: 30,
@@ -134,7 +172,6 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     fontSize: 14,
   },
-  // CREATE AN ACCOUNT BUTTON
   btn: {
     backgroundColor: COLORS.darkGreen,
     paddingVertical: 14,
@@ -149,8 +186,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-
-  // OR
   orContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -163,7 +198,6 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
     letterSpacing: 1,
   },
-  // GOOGLE SIGNUP BUTTON
   googleBtn: {
     backgroundColor: "lightgray",
     paddingVertical: 14,
@@ -184,7 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  // SIGN UP LINK
   signupText: {
     marginTop: 10,
     fontSize: 14,

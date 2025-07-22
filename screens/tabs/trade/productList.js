@@ -1,23 +1,51 @@
-import React from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import dayjs from "dayjs";
+import { router } from "expo-router";
 import {
-  View,
-  Text,
+  Alert,
   FlatList,
-  TouchableOpacity,
   Image,
   Platform,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Animated, { FadeInRight } from "react-native-reanimated";
-import dayjs from "dayjs";
 import { COLORS } from "../../../assets/constants/theme";
-import { router } from "expo-router";
+import verified from "../../../assets/images/verified.png";
+import { deleteItem } from "../../../BACKEND/API'S/items";
 
-export default function ProductList({ status }) {
-  const renderItem = ({ item, index }) => {
-    const isPending = item.status === "Pending Trade";
+// UPDATED 
+export default function ProductList({ status, onDelete }) {
+  // Delete item handler with confirmation
+  const handleDelete = (itemId) => {
+    Alert.alert(
+      "Delete Item",
+      "Are you sure you want to delete this item?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteItem(itemId); //  Call backend API
+              onDelete(); // Re-fetch updated list from parent
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete item. Try again.");
+              console.error("Delete error:", error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+    const renderItem = ({ item, index }) => {
+    const isPending = item.availability_status === "pending";
 
     return (
       <Animated.View
@@ -25,16 +53,16 @@ export default function ProductList({ status }) {
         key={index}
       >
         <TouchableOpacity style={styles.allCards}>
-          {/* LEFT CONTAINER */}
+          {/* LEFT: Image + Info */}
           <View style={styles.leftContainer}>
             <Image
-              source={{ uri: item.image?.[0] }}
+              source={item.images?.[0] ? { uri: item.images[0] } : verified}
               style={styles.image}
               resizeMode="cover"
             />
             <View style={styles.textContainer}>
               <Text style={styles.title} numberOfLines={1}>
-                {item.title}
+                {item.name}
               </Text>
               <Text style={styles.description} numberOfLines={2}>
                 {item.description}
@@ -42,7 +70,7 @@ export default function ProductList({ status }) {
             </View>
           </View>
 
-          {/* RIGHT CONTAINER */}
+          {/* RIGHT: Actions */}
           <View style={styles.rightContainer}>
             <View style={styles.editDeleteContainer}>
               {isPending ? (
@@ -65,7 +93,7 @@ export default function ProductList({ status }) {
                   <TouchableOpacity onPress={() => router.push("/editItem")}>
                     <FontAwesome name="edit" size={25} color={COLORS.primary} />
                   </TouchableOpacity>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item.id)}>
                     <MaterialIcons
                       name="delete"
                       size={30}
@@ -76,7 +104,7 @@ export default function ProductList({ status }) {
               )}
             </View>
             <Text style={styles.postedAt}>
-              {dayjs(item.createdAt).format("MM/DD/YYYY")}
+              {dayjs(item.created_at).format("MM/DD/YYYY")}
             </Text>
           </View>
         </TouchableOpacity>
@@ -86,7 +114,6 @@ export default function ProductList({ status }) {
 
   return (
     <View>
-      {/* NOTE MESSAGE */}
       <View style={styles.verificationNote}>
         <Text style={styles.verificationText}>
           Want to be trusted by other users? Verify your account to boost your
@@ -131,10 +158,6 @@ const styles = StyleSheet.create({
     borderColor: "lightgray",
     flexDirection: "row",
     elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.5,
     marginHorizontal: 20,
     marginTop: 10,
   },

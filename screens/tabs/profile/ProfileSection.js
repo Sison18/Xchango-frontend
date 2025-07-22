@@ -1,25 +1,70 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useCallback } from "react";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../../assets/constants/theme";
+import { getMe } from "../../../BACKEND/API'S/auth";
+import { useAuth } from "../../../BACKEND/CONTEXTS/authContext";
+import { getToken } from "../../../BACKEND/UTILS/secureStore";
 
-export default function ProfileSection({ userOne }) {
+export default function ProfileSection() {
+  const { user, loading, setUser } = useAuth(); // Requires setUser in context
+
+  // Refresh user data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUser = async () => {
+        try {
+          const token = await getToken();
+          const freshUser = await getMe(token);
+          setUser(freshUser);
+        } catch (error) {
+          console.log("Failed to refresh user:", error.message);
+        }
+      };
+      fetchUser();
+    }, [])
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
+        <Text style={styles.loadingText}>Loading user...</Text>
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>No user data available</Text>
+      </View>
+    );
+  }
+
+  const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
+  const profileUri = user.profile_picture
+    ? user.profile_picture
+    : "https://via.placeholder.com/100";
+
   return (
     <View style={styles.container}>
-      {/* PROFILE CONTAINER WITH GRADIENT */}
       <LinearGradient
         colors={["#1a2a2a", "#0b5345", "#000000"]}
         style={styles.profileContainer}
       >
-        {/* PROFILE IMAGE */}
-        <Image source={{ uri: userOne.profile }} style={styles.profileImage} />
+        <Image source={{ uri: profileUri }} style={styles.profileImage} />
+
         <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-          {/* FULL NAME */}
-          <Text style={styles.profileName}>{userOne.userName}</Text>
-          {/* VERIFIED */}
+          <Text style={styles.profileName}>{fullName}</Text>
           <Image source={require("../../../assets/images/verified.png")} />
         </View>
-        {/* RATING */}
-        <Text style={styles.rating}>⭐ {userOne.rating.toFixed(1)}</Text>
+
+        {/* Optional: Show Email */}
+        <Text style={styles.email}>{user.email}</Text>
+
+        <Text style={styles.rating}>⭐ 4.8</Text>
       </LinearGradient>
     </View>
   );
@@ -33,10 +78,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 60,
     paddingBottom: 10,
-    // borderTopRightRadius: 900,
-    // borderTopLeftRadius: 100,
-    // borderBottomLeftRadius: 900,
-    // borderBottomRightRadius: 100,
   },
   profileImage: {
     width: 100,
@@ -49,8 +90,26 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: COLORS.mainBackgroundColor,
   },
-  rating: {
+  email: {
+    fontSize: 14,
     color: COLORS.mainBackgroundColor,
     marginTop: 2,
+  },
+  rating: {
+    color: COLORS.mainBackgroundColor,
+    marginTop: 4,
+  },
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: COLORS.darkGreen,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
   },
 });

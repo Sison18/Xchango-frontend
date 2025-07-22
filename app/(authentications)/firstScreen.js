@@ -1,18 +1,17 @@
+import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
 import {
+  Dimensions,
+  Image,
   ImageBackground,
+  Platform,
   StyleSheet,
   Text,
-  View,
-  Image,
-  Dimensions,
-  Platform,
   TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, { FadeInRight, ZoomIn } from "react-native-reanimated";
-import { Link } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../assets/constants/theme";
-import React from "react";
 
 const { height } = Dimensions.get("window");
 
@@ -21,7 +20,7 @@ const WelcomeScreen = () => {
     <>
       {/* IMAGE BACKGROUND PARENT */}
       <ImageBackground
-        source={require("../../assets/images/ecommerce-splash.png")}
+        source={require("../../assets/images/ecommerce-splash.png")} //here is the part na nag eeror sa eas apk build
         style={{ flex: 1 }}
         resizeMode="cover"
       >

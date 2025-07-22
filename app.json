@@ -5,13 +5,16 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "xchangoproject",
+    "deepLinks": ["xchangoproject://verify-email"],
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.anonymous.XChangoProject",
       "supportsTablet": true
     },
     "android": {
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.XChangoProject"
     },
     "web": {
       "bundler": "metro",
@@ -20,17 +23,24 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen",
+        "expo-splash-screen", 
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4ee5ee05-47ba-49ad-8c75-e556c3be0851"
+      }
     }
   }
 }
