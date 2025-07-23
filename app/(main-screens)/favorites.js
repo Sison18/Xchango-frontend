@@ -6,7 +6,12 @@ import FavoritesHeader from "../../screens/tabs/favorites/favoritesHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../assets/constants/theme";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  View,
+} from "react-native";
 
 export default function FavoriteScreen() {
   const [product, setProduct] = useState(null);
@@ -50,12 +55,30 @@ export default function FavoriteScreen() {
         <View style={{ flex: 1, backgroundColor: COLORS.mainBackgroundColor }}>
           <HomeScreenHeader />
 
-          <FavoritesHeader />
+          <FlatList
+            data={[]}
+            renderItem={() => null}
+            ListHeaderComponent={
+              <>
+                <FavoritesHeader />
 
-          <FavoritesContent
-            products={product}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
+                <FavoritesContent
+                  products={product}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
+              </>
+            }
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[COLORS.darkGreen]}
+                tintColor={COLORS.darkGreen}
+                progressBackgroundColor={COLORS.lightgreen}
+              />
+            }
           />
         </View>
       </SafeAreaView>

@@ -16,7 +16,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { router } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 
-export default function FavoritesContent({ products, refreshing, onRefresh }) {
+export default function FavoritesContent({ products }) {
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => router.push(`/(product-details)/${item.id}`)}
@@ -77,14 +77,6 @@ export default function FavoritesContent({ products, refreshing, onRefresh }) {
         backgroundColor: COLORS.mainBackgroundColor,
       }}
       columnWrapperStyle={styles.columnWrapper}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={[COLORS.darkGreen]} // Android
-          tintColor={COLORS.darkGreen} // iOS
-        />
-      }
       ListEmptyComponent={() => (
         <View style={styles.emptyContainer}>
           <AntDesign name="heart" size={45} color={COLORS.secondary} />

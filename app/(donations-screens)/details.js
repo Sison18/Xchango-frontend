@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.mainBackgroundColor,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    maxHeight: "70%",
+    maxHeight: "75%",
     overflow: "hidden",
   },
 
@@ -367,9 +367,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.cardBg,
     backgroundColor: COLORS.lightgreen,
-    borderRadius: 10,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
     padding: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 30,
     marginTop: 20,
   },
   modalTitle: {
@@ -405,14 +406,14 @@ const styles = StyleSheet.create({
   },
   imageCarousel: {
     width: "100%",
-    marginTop: 20,
+    marginTop: 30,
     marginBottom: 10,
     marginLeft: 20,
     paddingBottom: 10,
   },
   modalImageItem: {
     width: 300,
-    height: 250,
+    height: 200,
     borderRadius: 10,
     marginRight: 20,
     resizeMode: "cover",

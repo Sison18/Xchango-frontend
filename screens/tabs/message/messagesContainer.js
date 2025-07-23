@@ -56,8 +56,8 @@ export default function ChatList({ products }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 10,
+    backgroundColor: COLORS.mainBackgroundColor,
+    padding: 10,
   },
   chatCard: {
     flexDirection: "row",

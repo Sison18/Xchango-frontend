@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import TradeScreenTabs from "../../screens/tabs/trade/tradeScreenTabs";
 import axios from "axios";

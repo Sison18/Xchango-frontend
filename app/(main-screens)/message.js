@@ -1,8 +1,14 @@
 import MessageScreenHeader from "../../screens/tabs/message/messageScreenHeader";
 import ChatXChango from "../../components/chatXChango";
 import MessageContainer from "../../screens/tabs/message/messagesContainer";
-import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  View,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  FlatList,
+} from "react-native";
 import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../assets/constants/theme";
@@ -10,6 +16,7 @@ import { StatusBar } from "expo-status-bar";
 
 export default function MessageScreen() {
   const [products, setProducts] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getProductsDetails();
@@ -24,6 +31,12 @@ export default function MessageScreen() {
       console.error("Error fetching product:", error.message);
     }
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getProductsDetails();
+    setRefreshing(false);
+  }, []);
 
   if (!products) {
     return (
@@ -42,7 +55,26 @@ export default function MessageScreen() {
         <StatusBar style="light" />
         <View style={{ flex: 1 }}>
           <MessageScreenHeader />
-          <MessageContainer products={products} />
+
+          <FlatList
+            data={[]}
+            renderItem={() => null}
+            ListHeaderComponent={
+              <>
+                <MessageContainer products={products} />
+              </>
+            }
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[COLORS.darkGreen]}
+                tintColor={COLORS.darkGreen}
+                progressBackgroundColor={COLORS.lightgreen}
+              />
+            }
+          />
 
           <ChatXChango
             positionStyle={{ position: "absolute", bottom: 15, right: 25 }}
