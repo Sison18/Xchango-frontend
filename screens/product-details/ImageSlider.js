@@ -10,6 +10,15 @@ import {
 } from "react-native";
 import { COLORS } from "../../assets/constants/theme";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  SlideInLeft,
+  SlideInRight,
+  SlideInUp,
+  ZoomIn,
+} from "react-native-reanimated";
 
 const width = Dimensions.get("screen").width;
 const screenWidth = Dimensions.get("window").width;
@@ -38,7 +47,10 @@ export default function ImageSlider({ imageList = [], price }) {
         data={imageList}
         ref={flatListRef}
         renderItem={({ item }) => (
-          <View style={styles.imageWrapper}>
+          <Animated.View
+            style={styles.imageWrapper}
+            entering={FadeIn.delay(200).duration(500)}
+          >
             <Image
               source={{ uri: item }}
               style={styles.image}
@@ -46,7 +58,7 @@ export default function ImageSlider({ imageList = [], price }) {
               accessible
               accessibilityLabel="Main product image"
             />
-          </View>
+          </Animated.View>
         )}
         horizontal
         pagingEnabled
@@ -77,7 +89,8 @@ export default function ImageSlider({ imageList = [], price }) {
               accessible
               accessibilityLabel={`Thumbnail ${index + 1}`}
             >
-              <Image
+              <Animated.Image
+                entering={FadeInDown.delay(150 * index).duration(500)}
                 source={{ uri: item }}
                 style={[
                   styles.thumbnailImg,
@@ -101,7 +114,12 @@ export default function ImageSlider({ imageList = [], price }) {
             />
           )}
           {/* PRICE */}
-          <Text style={styles.estimatedPrice}>{price}</Text>
+          <Animated.Text
+            entering={SlideInRight.delay(500).duration(500)}
+            style={styles.estimatedPrice}
+          >
+            {price}
+          </Animated.Text>
         </View>
       </View>
     </View>

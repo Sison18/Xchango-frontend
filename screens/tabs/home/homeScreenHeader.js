@@ -27,7 +27,7 @@ export default function HomeScreenHeader() {
       </Pressable>
 
       {/* NOTIFICATION */}
-      <TouchableOpacity onPress={() => router.push("/login")}>
+      <TouchableOpacity onPress={() => router.push("/notifications")}>
         <Ionicons
           name="notifications-circle-outline"
           size={36}

@@ -80,6 +80,12 @@ export default function Products({ products }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ alignItems: "center", paddingBottom: 0 }}
         columnWrapperStyle={styles.columnWrapper}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <FontAwesome5 name="box-open" size={48} color={COLORS.secondary} />
+            <Text style={styles.emptyText}>No products to show.</Text>
+          </View>
+        )}
       />
     </>
   );
@@ -186,5 +192,22 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     paddingVertical: 2,
     borderRadius: 10,
+  },
+  // EMPTY CONTAINER
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 250,
+    width: "100%",
+    paddingTop: 60,
+    paddingBottom: 60,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: COLORS.secondary,
+    marginTop: 12,
+    fontWeight: "500",
+    textAlign: "center",
   },
 });

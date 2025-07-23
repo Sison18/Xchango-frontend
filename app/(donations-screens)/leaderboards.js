@@ -19,6 +19,15 @@ import {
 } from "react-native";
 import axios from "axios";
 import { router } from "expo-router";
+import Animated, {
+  FadeInLeft,
+  FadeInRight,
+  FlipInXDown,
+  FlipInXUp,
+  ZoomInDown,
+  ZoomInUp,
+} from "react-native-reanimated";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function TopDonorScreen() {
   const [donors, setDonors] = useState([]);
@@ -69,21 +78,23 @@ export default function TopDonorScreen() {
   }
 
   const renderDonorItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={styles.donorItem}
-      onPress={() => {
-        if (item && item.id) {
-          router.push(`/(user-profile)/${item.id}`);
-        }
-      }}
-    >
-      <Text style={styles.rank}>{index + 1}</Text>
-      <Image source={{ uri: item.profile }} style={styles.donorImage} />
-      <View style={styles.donorDetails}>
-        <Text style={styles.donorName}>{item.userName}</Text>
-        <Text style={styles.donationCount}>{item.donations} Donations</Text>
-      </View>
-    </TouchableOpacity>
+    <Animated.View entering={FlipInXDown.delay(index * 100).duration(500)}>
+      <TouchableOpacity
+        style={styles.donorItem}
+        onPress={() => {
+          if (item && item.id) {
+            router.push(`/(user-profile)/${item.id}`);
+          }
+        }}
+      >
+        <Text style={styles.rank}>{index + 1}</Text>
+        <Image source={{ uri: item.profile }} style={styles.donorImage} />
+        <View style={styles.donorDetails}>
+          <Text style={styles.donorName}>{item.userName}</Text>
+          <Text style={styles.donationCount}>{item.donations} Donations</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   return (
@@ -119,6 +130,16 @@ export default function TopDonorScreen() {
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.donorList}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyContainer}>
+                <MaterialIcons
+                  name="leaderboard"
+                  size={48}
+                  color={COLORS.secondary}
+                />
+                <Text style={styles.emptyText}>No chats yet.</Text>
+              </View>
+            )}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -270,5 +291,18 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     marginVertical: 1,
     borderRadius: 7,
+  },
+  // 3️⃣ empty state styles
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 300,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
+    marginTop: 12,
+    textAlign: "center",
   },
 });

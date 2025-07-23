@@ -16,6 +16,13 @@ import HeaderBar from "../../components/header";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { COLORS } from "../../assets/constants/theme";
+import Animated, {
+  FadeInDown,
+  FadeInLeft,
+  FadeInRight,
+  SlideInLeft,
+  SlideInRight,
+} from "react-native-reanimated";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -41,7 +48,10 @@ const StarRating = ({ rating }) => (
 const FilterBar = ({ selectedRating, setSelectedRating }) => {
   const options = [5, 4, 3, 2, 1, "All"];
   return (
-    <View style={styles.filterBar}>
+    <Animated.View
+      style={styles.filterBar}
+      entering={FadeInRight.delay(300).duration(200)}
+    >
       {options.map((opt) => (
         <TouchableOpacity
           key={opt}
@@ -61,11 +71,11 @@ const FilterBar = ({ selectedRating, setSelectedRating }) => {
           </Text>
         </TouchableOpacity>
       ))}
-    </View>
+    </Animated.View>
   );
 };
 
-const ReviewCard = ({ item, openImagePreview }) => {
+const ReviewCard = ({ item, openImagePreview, index }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   // normalize to array
@@ -84,7 +94,10 @@ const ReviewCard = ({ item, openImagePreview }) => {
   };
 
   return (
-    <View style={styles.card}>
+    <Animated.View
+      style={styles.card}
+      entering={FadeInDown.delay(300).duration(200)}
+    >
       <View style={styles.header}>
         <Image
           source={{ uri: item.profile }}
@@ -135,7 +148,7 @@ const ReviewCard = ({ item, openImagePreview }) => {
           )}
         </>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
@@ -149,7 +162,6 @@ export default function Reviews() {
   const [selectedImageUri, setSelectedImageUri] = useState(null);
 
   const getReviewsDetails = async () => {
-    setLoading(true);
     try {
       const response = await axios.get("http://192.168.100.10:5000/products");
       setReviews(response.data);

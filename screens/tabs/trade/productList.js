@@ -20,13 +20,12 @@ export default function ProductList({ status }) {
     const isPending = item.status === "Pending Trade";
 
     return (
-      <Animated.View
-        entering={FadeInRight.duration(900).delay(index * 100)}
-        key={index}
+      <TouchableOpacity
+        onPress={() => router.push(`/(product-details)/${item.id}`)}
       >
-        <TouchableOpacity
+        <Animated.View
+          entering={FadeInRight.duration(900).delay(index * 100)}
           style={styles.allCards}
-          onPress={() => router.push(`/(product-details)/${item.id}`)}
         >
           {/* LEFT CONTAINER */}
           <View style={styles.leftContainer}>
@@ -84,13 +83,13 @@ export default function ProductList({ status }) {
               {dayjs(item.createdAt).format("MM/DD/YYYY")}
             </Text>
           </View>
-        </TouchableOpacity>
-      </Animated.View>
+        </Animated.View>
+      </TouchableOpacity>
     );
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={status}
         keyExtractor={(_, index) => index.toString()}
@@ -98,9 +97,9 @@ export default function ProductList({ status }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 60,
+          flexGrow: 1,
         }}
         ListHeaderComponent={
-          // NOTE MESSAGE
           <View style={styles.verificationNote}>
             <Text style={styles.verificationText}>
               Want to be trusted by other users? Verify your account to boost
@@ -108,6 +107,17 @@ export default function ProductList({ status }) {
             </Text>
           </View>
         }
+        // —— Empty State ——
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <MaterialIcons
+              name="inventory"
+              size={48}
+              color={COLORS.secondary}
+            />
+            <Text style={styles.emptyText}>No items to display.</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -183,5 +193,17 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 25,
     paddingRight: 15,
+  },
+  // —— Empty State Styles ——
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: COLORS.secondary,
+    marginTop: 12,
+    textAlign: "center",
   },
 });

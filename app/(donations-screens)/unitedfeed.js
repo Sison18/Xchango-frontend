@@ -20,6 +20,14 @@ import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { router } from "expo-router";
 import ChatXChango from "../../components/chatXChango";
+import Animated, {
+  BounceIn,
+  FadeInDown,
+  SlideInLeft,
+  SlideInRight,
+  StretchInX,
+  ZoomIn,
+} from "react-native-reanimated";
 
 const { width: screenWidth } = Dimensions.get("screen");
 // Approximate item height (profile + text + image + dots + padding)
@@ -98,6 +106,12 @@ export default function UnitedFeedScreen() {
         data={data}
         renderItem={renderPost}
         keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Entypo name="news" size={48} color={COLORS.secondary} />
+            <Text style={styles.emptyText}>No Posts yet.</Text>
+          </View>
+        )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -208,7 +222,10 @@ function ContentPosts({ imageList, info }) {
   };
 
   return (
-    <View style={styles.postContainer}>
+    <Animated.View
+      style={styles.postContainer}
+      entering={StretchInX.delay(100).duration(300)}
+    >
       <View style={styles.card}>
         <View style={styles.profileRow}>
           <Image
@@ -281,7 +298,7 @@ function ContentPosts({ imageList, info }) {
           </Pressable>
         </Modal>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -336,7 +353,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   profileRow: {
     flexDirection: "row",
@@ -368,11 +385,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  imageGrid: {
-    marginTop: 10,
-    backgroundColor: COLORS.lightgreen,
-  },
   image: {
+    marginTop: 10,
     height: 300,
     borderRadius: 8,
   },
@@ -403,5 +417,18 @@ const styles = StyleSheet.create({
   modalImage: {
     width: "100%",
     height: "90%",
+  },
+  // EMPTY CONTAINER
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 320,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
+    marginTop: 12,
+    textAlign: "center",
   },
 });

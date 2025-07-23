@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -13,80 +14,84 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS } from "../../../../XChangoProject/assets/constants/theme";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { router } from "expo-router";
-import React from "react";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function FavoritesContent({ products, refreshing, onRefresh }) {
   const renderItem = ({ item, index }) => (
-    <>
-      {/* PRODUCT CARD */}
-      <TouchableOpacity
-        onPress={() => router.push(`/(product-details)/${item.id}`)}
+    <TouchableOpacity
+      onPress={() => router.push(`/(product-details)/${item.id}`)}
+    >
+      <Animated.View
+        entering={FadeInDown.delay(150 * index).duration(500)}
+        style={styles.animatedWrapper}
       >
-        <Animated.View
-          entering={FadeInDown.delay(150 * index).duration(500)}
-          style={styles.animatedWrapper}
-        >
-          {/* IMAGE */}
-          <Image source={{ uri: item.image[0] }} style={styles.image} />
+        {/* IMAGE */}
+        <Image source={{ uri: item.image[0] }} style={styles.image} />
 
-          {/* HEART BUTTON */}
-          <TouchableOpacity style={styles.heart}>
-            <FontAwesome5 name="heart" size={16} color={COLORS.cardBg} />
-          </TouchableOpacity>
+        {/* HEART BUTTON */}
+        <TouchableOpacity style={styles.heart}>
+          <FontAwesome5 name="heart" size={16} color={COLORS.cardBg} />
+        </TouchableOpacity>
 
-          <View style={styles.titleConditionLocationContainer}>
-            <View style={styles.nameConditionContainer}>
-              {/* ITEM NAME */}
-              <Text style={styles.productTitle} numberOfLines={1}>
-                {item.title}
-              </Text>
-              {/* CONDITION */}
-              <Text style={styles.condition} numberOfLines={1}>
-                {item.condition}
-              </Text>
-            </View>
+        <View style={styles.titleConditionLocationContainer}>
+          <View style={styles.nameConditionContainer}>
+            {/* ITEM NAME */}
+            <Text style={styles.productTitle} numberOfLines={1}>
+              {item.title}
+            </Text>
+            {/* CONDITION */}
+            <Text style={styles.condition} numberOfLines={1}>
+              {item.condition}
+            </Text>
+          </View>
 
-            <View style={styles.locationTransactionContainer}>
-              {/* LOCATION */}
-              <Text style={styles.locationText} numberOfLines={1}>
-                📍{item.location}
+          <View style={styles.locationTransactionContainer}>
+            {/* LOCATION */}
+            <Text style={styles.locationText} numberOfLines={1}>
+              📍{item.location}
+            </Text>
+            {/* TRANSACTION OPTION */}
+            <View style={styles.transactionContainer}>
+              <Text style={styles.transactionText} numberOfLines={1}>
+                {item.tradeOption[0]}
               </Text>
-              {/* TRANSACTION OPTION */}
-              <View style={styles.transactionContainer}>
-                <Text style={styles.transactionText} numberOfLines={1}>
-                  {item.tradeOption[0]}
-                </Text>
-              </View>
             </View>
           </View>
-        </Animated.View>
-      </TouchableOpacity>
-    </>
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 
   return (
-    <>
-      <FlatList
-        data={products}
-        renderItem={renderItem}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        style={styles.productsList}
-        contentContainerStyle={{
-          alignItems: "center",
-          backgroundColor: COLORS.mainBackgroundColor,
-        }}
-        columnWrapperStyle={styles.columnWrapper}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[COLORS.darkGreen]} // Android
-            tintColor={COLORS.darkGreen} // iOS
-          />
-        }
-      />
-    </>
+    <FlatList
+      data={products}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id.toString()}
+      numColumns={2}
+      showsVerticalScrollIndicator={false}
+      style={styles.productsList}
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.mainBackgroundColor,
+      }}
+      columnWrapperStyle={styles.columnWrapper}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[COLORS.darkGreen]} // Android
+          tintColor={COLORS.darkGreen} // iOS
+        />
+      }
+      ListEmptyComponent={() => (
+        <View style={styles.emptyContainer}>
+          <AntDesign name="heart" size={45} color={COLORS.secondary} />
+          <Text style={styles.emptyText}>No favorites yet.</Text>
+        </View>
+      )}
+    />
   );
 }
 
@@ -179,5 +184,19 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     paddingVertical: 2,
     borderRadius: 10,
+  },
+
+  // EMPTY STATE
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 60,
+    width: "100%",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: COLORS.secondary,
+    marginTop: 12,
+    textAlign: "center",
   },
 });

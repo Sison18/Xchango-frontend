@@ -18,6 +18,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import Modal from "react-native-modal";
+import Animated, {
+  BounceIn,
+  FadeInDown,
+  SlideInLeft,
+  SlideInRight,
+  StretchInX,
+  StretchInY,
+  ZoomIn,
+} from "react-native-reanimated";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 // Main Component: DetailsScreen
 export default function DetailsScreen() {
@@ -124,6 +134,16 @@ export default function DetailsScreen() {
 
         <FlatList
           data={filteredData}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <MaterialCommunityIcons
+                name="account-details"
+                size={48}
+                color={COLORS.secondary}
+              />
+              <Text style={styles.emptyText}>No chats yet.</Text>
+            </View>
+          )}
           renderItem={({ item }) => (
             <DonationItem item={item} openModal={openModal} />
           )}
@@ -242,7 +262,10 @@ export default function DetailsScreen() {
 // DonationItem Component
 const DonationItem = ({ item, openModal }) => (
   <Pressable onPress={() => openModal(item)}>
-    <View style={styles.card}>
+    <Animated.View
+      style={styles.card}
+      entering={StretchInY.delay(100).duration(300)}
+    >
       <View style={styles.itemInfo}>
         <Image source={{ uri: item.image[0] }} style={styles.itemImage} />
         <View style={styles.textContainer}>
@@ -256,7 +279,7 @@ const DonationItem = ({ item, openModal }) => (
       <Text style={[styles.itemStatus, getStatusStyle(item.status2)]}>
         {item.status2}
       </Text>
-    </View>
+    </Animated.View>
   </Pressable>
 );
 
@@ -330,13 +353,13 @@ const styles = StyleSheet.create({
   inProgress: { color: "#746119ff" },
   donated: { color: "#064E3B" },
   pending: { color: "#4B5563" },
-  cancelled: { color: "#EF4444" },
+  cancelled: { color: "#c90000ff" },
   modalWrapper: { justifyContent: "flex-end", margin: 0 },
   modalContent: {
     backgroundColor: COLORS.mainBackgroundColor,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    maxHeight: "80%",
+    maxHeight: "70%",
     overflow: "hidden",
   },
 
@@ -389,7 +412,7 @@ const styles = StyleSheet.create({
   },
   modalImageItem: {
     width: 300,
-    height: 200,
+    height: 250,
     borderRadius: 10,
     marginRight: 20,
     resizeMode: "cover",
@@ -434,5 +457,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: COLORS.mainBackgroundColor,
+  },
+  // 3️⃣ empty state styles
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 250,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
+    marginTop: 12,
+    textAlign: "center",
   },
 });

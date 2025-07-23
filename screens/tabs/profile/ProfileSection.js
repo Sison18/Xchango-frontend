@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,14 +11,15 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../../../assets/constants/theme";
 import { router } from "expo-router";
-import { useState } from "react";
 
 export default function ProfileSection({ userOne }) {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
 
+  const placeholderImage = require("../../../assets/images/no-profile.png");
+
   const openImagePreview = (uri) => {
-    setSelectedImageUri(uri);
+    setSelectedImageUri(uri || Image.resolveAssetSource(placeholderImage).uri);
     setPreviewVisible(true);
   };
 
@@ -25,6 +27,11 @@ export default function ProfileSection({ userOne }) {
     setPreviewVisible(false);
     setSelectedImageUri(null);
   };
+
+  const avatarSource = userOne.profile
+    ? { uri: userOne.profile }
+    : placeholderImage;
+
   return (
     <View style={styles.container}>
       {/* PROFILE CONTAINER WITH GRADIENT */}
@@ -34,13 +41,10 @@ export default function ProfileSection({ userOne }) {
       >
         <TouchableOpacity onPress={() => openImagePreview(userOne.profile)}>
           {/* PROFILE IMAGE */}
-          <Image
-            source={{ uri: userOne.profile }}
-            style={styles.profileImage}
-          />
+          <Image source={avatarSource} style={styles.profileImage} />
         </TouchableOpacity>
 
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+        <View style={styles.nameRow}>
           {/* FULL NAME */}
           <Text style={styles.profileName}>{userOne.userName}</Text>
           {/* VERIFIED */}
@@ -48,6 +52,7 @@ export default function ProfileSection({ userOne }) {
             <Image source={require("../../../assets/images/verified.png")} />
           )}
         </View>
+
         {/* RATING */}
         <TouchableOpacity onPress={() => router.push("/reviews")}>
           <Text style={styles.rating}>⭐ {userOne.rating.toFixed(1)}</Text>
@@ -58,7 +63,9 @@ export default function ProfileSection({ userOne }) {
       <Modal visible={previewVisible} transparent animationType="fade">
         <Pressable style={styles.modalOverlay} onPress={closeImagePreview}>
           <Image
-            source={{ uri: selectedImageUri }}
+            source={
+              selectedImageUri ? { uri: selectedImageUri } : placeholderImage
+            }
             style={styles.modalImage}
             resizeMode="contain"
           />
@@ -82,17 +89,21 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 140,
   },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 5,
+  },
   profileName: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 5,
     color: COLORS.mainBackgroundColor,
   },
   rating: {
     color: COLORS.mainBackgroundColor,
     marginTop: 2,
   },
-  // New styles for modal overlay and image preview
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.8)",

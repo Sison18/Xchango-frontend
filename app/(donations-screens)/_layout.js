@@ -1,11 +1,6 @@
 import { Tabs } from "expo-router";
 import { COLORS } from "../../assets/constants/theme";
-import { Image, Platform, Pressable, StyleSheet } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Entypo from "@expo/vector-icons/Entypo";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import * as Animatable from "react-native-animatable";
+import { Platform } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function DonationsScreenLayout() {

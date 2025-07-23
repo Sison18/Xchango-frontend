@@ -3,6 +3,13 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { COLORS } from "../../assets/constants/theme";
 import Line from "../../assets/constants/line";
 import { router } from "expo-router";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  SlideInDown,
+  SlideInLeft,
+  SlideInRight,
+} from "react-native-reanimated";
 
 export default function Content({
   title,
@@ -27,10 +34,18 @@ export default function Content({
     <>
       <Line />
       {/* TITLE-------------------------------------------------------------*/}
-      <Text style={styles.title}>{title}</Text>
+      <Animated.Text
+        entering={FadeIn.delay(100).duration(200)}
+        style={styles.title}
+      >
+        {title}
+      </Animated.Text>
 
       {/* DESCRIPTION CONTAINER-------------------------------------------- */}
-      <View style={styles.descriptionContainer}>
+      <Animated.View
+        style={styles.descriptionContainer}
+        entering={FadeIn.delay(100).duration(400)}
+      >
         <Text
           style={styles.descriptionText}
           numberOfLines={expanded ? undefined : MAX_LINES}
@@ -46,7 +61,7 @@ export default function Content({
             </Text>
           </TouchableOpacity>
         )}
-      </View>
+      </Animated.View>
 
       <Line />
 
