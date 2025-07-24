@@ -9,10 +9,16 @@ import {
 } from "react-native";
 import Animated, { FadeInRight } from "react-native-reanimated";
 
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { COLORS } from "../../../assets/constants/theme";
+
 export default function ChatList({ products }) {
   const renderItem = ({ item, index }) => (
-    <Animated.View entering={FadeInRight.delay(index * 100).duration(500)}>
-      <TouchableOpacity style={styles.chatCard}>
+    <TouchableOpacity>
+      <Animated.View
+        entering={FadeInRight.delay(index * 100).duration(500)}
+        style={styles.chatCard}
+      >
         <Image source={{ uri: item.profile }} style={styles.avatar} />
         <View style={styles.textContainer}>
           <View style={styles.topRow}>
@@ -23,8 +29,8 @@ export default function ChatList({ products }) {
             {item.message}
           </Text>
         </View>
-      </TouchableOpacity>
-    </Animated.View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 
   return (
@@ -34,7 +40,13 @@ export default function ChatList({ products }) {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 80, paddingTop: 10 }}
+        contentContainerStyle={{ paddingBottom: 50, paddingTop: 10 }}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <FontAwesome5 name="comments" size={48} color={COLORS.secondary} />
+            <Text style={styles.emptyText}>No chats yet.</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -43,8 +55,8 @@ export default function ChatList({ products }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 10,
+    backgroundColor: COLORS.mainBackgroundColor,
+    padding: 10,
   },
   chatCard: {
     flexDirection: "row",
@@ -85,5 +97,18 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 14,
     color: "#444",
+  },
+  // 3️⃣ empty state styles
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 300,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
+    marginTop: 12,
+    textAlign: "center",
   },
 });

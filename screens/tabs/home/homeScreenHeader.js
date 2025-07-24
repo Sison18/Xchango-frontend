@@ -27,7 +27,7 @@ export default function HomeScreenHeader() {
       </Pressable>
 
       {/* NOTIFICATION */}
-      <TouchableOpacity onPress={() => router.push("/login")}>
+      <TouchableOpacity onPress={() => router.push("/notifications")}>
         <Ionicons
           name="notifications-circle-outline"
           size={36}
@@ -44,11 +44,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
     paddingHorizontal: 20,
     paddingBottom: 15,
     paddingTop: 10,
     gap: 10,
+    backgroundColor: COLORS.mainBackgroundColor,
   },
 
   // XCHANGO TITLE

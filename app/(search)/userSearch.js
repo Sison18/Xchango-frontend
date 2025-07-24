@@ -1,9 +1,9 @@
-import { StyleSheet, View, Text, FlatList, Image } from "react-native";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
-import SearchBar from "../../components/search";
-import { COLORS } from "../../assets/constants/theme";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../../assets/constants/theme";
+import SearchBar from "../../components/search";
 
 export default function UserSearch() {
   const [query, setQuery] = useState("");
@@ -16,7 +16,7 @@ export default function UserSearch() {
 
   const fetchUsersFromProducts = async () => {
     try {
-      const res = await axios.get("http://192.168.100.10:5000/products");
+      const res = await axios.get("http://192.168.100.112:5000/products");
 
       const uniqueUsersMap = new Map();
 

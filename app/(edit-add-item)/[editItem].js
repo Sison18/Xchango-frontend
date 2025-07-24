@@ -7,56 +7,73 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  ScrollView,
-  Modal,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../assets/constants/theme";
 import InputField from "../../components/textField/inputField";
+import Wishlist from "../../components/wishlist";
 import CustomPicker from "../../components/CustomPicker";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import axios from "axios";
-import useBackConfirmation from "../../hooks/cancelConfirmation";
 import { StatusBar } from "expo-status-bar";
 import HeaderBar from "../../components/header";
+import * as ImagePicker from "expo-image-picker";
+import useBackConfirmation from "../../hooks/cancelConfirmation";
 
-export default function ProductForm() {
+export default function ProductsDetails() {
+  const { editItem } = useLocalSearchParams();
+  const [product, setProduct] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedPreference, setSelectedPreference] = useState("");
+  const [selectedTradeOption, setSelectedTradeOption] = useState("");
+  const [location, setLocation] = useState("");
   const [imageUris, setImageUris] = useState([]);
+
   const [previewVisible, setPreviewVisible] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
-  const [product, setProduct] = useState(null);
-  const [location, setLocation] = useState("");
 
+  useBackConfirmation("Are you sure you want to cancel this post?");
+
+  // fetch once
   useEffect(() => {
-    getProductsDetails();
+    fetchProductDetails();
   }, []);
 
-  const getProductsDetails = async () => {
+  const fetchProductDetails = async () => {
     try {
-      const response = await axios.get("http://192.168.100.10:5000/products");
-      if (response.data.length > 0) {
-        const firstProduct = response.data[0];
-        setProduct(firstProduct);
-        const address = firstProduct.address?.[0];
-        if (address) {
-          setLocation(
-            `${address.street}, ${address.barangay}, ${address.city}, ${address.regionProvince}, ${address.postalCode}`
-          );
-        }
-      }
+      const response = await axios.get(
+        `http://192.168.100.10:5000/products/${editItem}`
+      );
+      setProduct(response.data);
     } catch (error) {
-      console.error("Error fetching product:", error.message);
+      console.error("Error fetching product details:", error.message);
     }
   };
+
+  // when product arrives, seed state
+  useEffect(() => {
+    if (!product) return;
+    setName(product.title || "");
+    setDescription(product.description || "");
+    setPrice(product.estimatedPrice?.toString() || "");
+    setSelectedStatus(product.condition || "");
+    setSelectedTradeOption(product.tradeOption?.[0] || "");
+    setImageUris(product.image || []);
+    if (product.address?.[0]) {
+      const addr = product.address[0];
+      setLocation(
+        `${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.regionProvince}, ${addr.postalCode}`
+      );
+    }
+  }, [product]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -64,8 +81,8 @@ export default function ProductForm() {
       allowsMultipleSelection: true,
       selectionLimit: 0,
       quality: 1,
+      allowsEditing: false,
     });
-
     if (!result.canceled) {
       const uris = result.assets.map((asset) => asset.uri);
       setImageUris((prev) => [...prev, ...uris]);
@@ -73,63 +90,52 @@ export default function ProductForm() {
   };
 
   const removeImage = (index) => {
-    const updated = [...imageUris];
-    updated.splice(index, 1);
-    setImageUris(updated);
-  };
-
-  const handlePost = () => {
-    if (
-      !name ||
-      !description ||
-      !selectedStatus ||
-      !selectedPreference ||
-      imageUris.length === 0
-    ) {
-      Alert.alert("Missing Info", "Please complete all fields.");
-      return;
-    }
-
-    // Proceed with post logic here
+    setImageUris((prev) => prev.filter((_, i) => i !== index));
   };
 
   const openImagePreview = (uri) => {
     setSelectedImageUri(uri);
     setPreviewVisible(true);
   };
-
   const closeImagePreview = () => {
     setPreviewVisible(false);
     setSelectedImageUri(null);
   };
 
-  useBackConfirmation("Are you sure you want to cancel this post?");
+  const handlePost = () => {
+    // your save logic here...
+    router.push("/trade");
+  };
+
+  if (!product) return <Text>Loading product details...</Text>;
 
   return (
     <>
       <StatusBar style="light" translucent />
-      <HeaderBar title="Donate Item" />
-
+      {/* HEADER */}
+      <HeaderBar title="Edit" />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        {/* PARENT CONTAINER */}
         <KeyboardAvoidingView
           style={styles.keyboardAvoiding}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -40}
         >
+          {/* SCROLL CONTAINER */}
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContainer}
           >
+            {/* CONTENT CONTAINER */}
             <View style={styles.contentContainer}>
-              {/* IMAGE SECTION */}
-              <Text style={styles.imgLabel}>Image</Text>
+              {/* IMAGE INPUT */}
               <View style={styles.imageBox}>
                 {imageUris.length > 0 ? (
                   <>
                     <ScrollView
                       horizontal
-                      showsHorizontalScrollIndicator={false}
+                      showsHorizontalScrollIndicator
                       contentContainerStyle={styles.imageScrollContainer}
                     >
                       {imageUris.map((uri, index) => (
@@ -140,7 +146,6 @@ export default function ProductForm() {
                             <Image
                               source={{ uri }}
                               style={styles.uploadedImage}
-                              resizeMode="cover"
                             />
                           </TouchableOpacity>
                           <TouchableOpacity
@@ -157,8 +162,8 @@ export default function ProductForm() {
                       ))}
                     </ScrollView>
                     <TouchableOpacity
-                      onPress={pickImage}
                       style={styles.addMoreBtn}
+                      onPress={pickImage}
                     >
                       <Ionicons
                         name="add-circle-outline"
@@ -170,8 +175,8 @@ export default function ProductForm() {
                   </>
                 ) : (
                   <TouchableOpacity
-                    onPress={pickImage}
                     style={styles.imageIconTextContainer}
+                    onPress={pickImage}
                   >
                     <Ionicons name="image-outline" size={40} color="#ccc" />
                     <Text style={{ color: COLORS.secondary }}>
@@ -181,90 +186,99 @@ export default function ProductForm() {
                 )}
               </View>
 
-              {/* ITEM NAME */}
-              <Text style={styles.inputLabel}>Item Name</Text>
+              {/* PRODUCT NAME */}
               <InputField
-                placeholder="Name of Item"
+                placeholder="Name of product"
+                placeholderTextColor={COLORS.placeholder}
                 value={name}
                 onChangeText={setName}
-                inputStyle={styles.itemNameDescription}
-                placeholderTextColor={COLORS.placeholder}
+                inputStyle={styles.nameDescriptionPriceStyle}
               />
 
               {/* DESCRIPTION */}
-              <Text style={styles.inputLabel}>Description</Text>
               <InputField
-                placeholder="Describe the item"
+                placeholder="Description"
+                placeholderTextColor={COLORS.placeholder}
                 value={description}
                 onChangeText={setDescription}
-                multiline
+                inputStyle={styles.nameDescriptionPriceStyle}
+                multiline={true}
                 numberOfLines={2}
-                inputStyle={styles.itemNameDescription}
-                placeholderTextColor={COLORS.placeholder}
               />
 
-              {/* RECEIVER PREFERENCE */}
-              <Text style={styles.inputLabel}>Receiver Preference</Text>
-              <CustomPicker
-                placeholder="Select preference"
-                selectedValue={selectedPreference}
-                onValueChange={setSelectedPreference}
-                options={[
-                  { label: "Children", value: "Children" },
-                  { label: "Elderly", value: "Elderly" },
-                  { label: "Students", value: "Students" },
-                  { label: "Families in need", value: "Families in need" },
-                  { label: "Homeless", value: "Homeless" },
-                  {
-                    label: "Victims of Calamities",
-                    value: "Victims of Calamities",
-                  },
-                  { label: "Orphanages", value: "Orphanages" },
-                  {
-                    label: "Persons with disabilities (PWD)",
-                    value: "Persons with disabilities (PWD)",
-                  },
-                  { label: "Anyone", value: "Anyone" },
-                ]}
-              />
+              {/* STATUS & PRICE CONTAINER */}
+              <View style={styles.statusPriceContainer}>
+                {/* STATUS */}
+                <View style={styles.halfInput}>
+                  <CustomPicker
+                    options={[
+                      { label: "Brand New", value: "Brand New" },
+                      { label: "Like New", value: "Like New" },
+                      { label: "Lightly Used", value: "Lightly Used" },
+                      { label: "Used", value: "Used" },
+                      { label: "Heavily Used", value: "Heavily Used" },
+                      { label: "Unboxed, Unused", value: "Unboxed" },
+                    ]}
+                    selectedValue={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                    placeholder="Select item status"
+                    placeholderStyle={{ color: COLORS.primary }}
+                  />
+                </View>
+                {/* PRICE */}
+                <View style={styles.halfInput}>
+                  <InputField
+                    placeholder="Estimated Price"
+                    placeholderTextColor={COLORS.placeholder}
+                    keyboardType="numeric"
+                    value={price}
+                    onChangeText={setPrice}
+                    inputStyle={styles.nameDescriptionPriceStyle}
+                  />
+                </View>
+              </View>
 
-              {/* ITEM CONDITION */}
-              <Text style={styles.conditionInputLabel}>Condition</Text>
+              {/* TRANSACTION */}
               <CustomPicker
-                placeholder="Select item status"
-                selectedValue={selectedStatus}
-                onValueChange={setSelectedStatus}
                 options={[
-                  { label: "Brand New", value: "Brand New" },
-                  { label: "Like New", value: "Like New" },
-                  { label: "Lightly Used", value: "Lightly Used" },
-                  { label: "Used", value: "Used" },
-                  { label: "Heavily Used", value: "Heavily Used" },
-                  { label: "Unboxed, Unused", value: "Unboxed" },
+                  { label: "Meet-up", value: "Meet-up" },
+                  {
+                    label: "Shipping Available",
+                    value: "Shipping Available",
+                  },
+                  { label: "Any", value: "Any" },
                 ]}
+                selectedValue={selectedTradeOption}
+                onValueChange={setSelectedTradeOption}
+                placeholder="Select transaction option"
+                placeholderStyle={{ color: COLORS.primary }}
               />
 
               {/* LOCATION */}
-              <Text style={styles.locationInputLabel}>Location</Text>
               <InputField
                 value={location}
-                onChangeText={setLocation}
+                onChangeText={(text) => setLocation(text)}
                 placeholder="Enter location"
                 multiline
-                inputStyle={styles.itemNameDescription}
+                inputStyle={styles.locationStyle}
               />
 
-              {/* BUTTONS */}
+              {/* WISHLIST */}
+              <Wishlist initialItems={product.wishlist || []} />
+
               <View style={styles.postCancelContainer}>
+                {/* POST BUTTON */}
                 <TouchableOpacity style={styles.postBtn} onPress={handlePost}>
                   <Text style={styles.postButtonText}>POST</Text>
                 </TouchableOpacity>
+
+                {/* CANCEL BUTTON */}
                 <TouchableOpacity
                   style={styles.cancelBtn}
                   onPress={() =>
                     Alert.alert(
                       "Cancel confirmation",
-                      "Are you sure you want to cancel this donation?",
+                      "Are you sure you want to cancel this post?",
                       [
                         { text: "No", style: "cancel" },
                         { text: "Yes", onPress: () => router.back() },
@@ -280,7 +294,7 @@ export default function ProductForm() {
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
 
-      {/* IMAGE PREVIEW MODAL */}
+      {/* IMAGE VIEW */}
       <Modal visible={previewVisible} transparent animationType="fade">
         <Pressable style={styles.modalOverlay} onPress={closeImagePreview}>
           <Image
@@ -303,15 +317,7 @@ const styles = StyleSheet.create({
   keyboardAvoiding: {
     flex: 1,
   },
-
-  // IMAGE
-  imgLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 3,
-    color: COLORS.primary,
-    paddingTop: 20,
-  },
+  // IMAGE INPUT
   imageBox: {
     borderWidth: 1,
     borderColor: COLORS.placeholder,
@@ -321,6 +327,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: "100%",
     padding: 10,
+    marginTop: 30,
   },
   imageScrollContainer: {
     flexDirection: "row",
@@ -345,6 +352,8 @@ const styles = StyleSheet.create({
     backgroundColor: "lightgray",
     borderRadius: 100,
   },
+
+  // ADD MORE IMAGE
   addMoreBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -356,49 +365,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
-  // INPUT LABEL AND STYLE
-  itemNameDescription: {
+
+  // PRODUCT NAME, DESCRIPTION, PRICE
+  nameDescriptionPriceStyle: {
     borderColor: COLORS.placeholder,
     width: "100%",
     fontSize: 14,
   },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 3,
-    color: "#444",
-  },
-  locationInputLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 3,
-    color: "#444",
-    marginTop: 20,
-  },
-  location: {
-    fontSize: 14,
-    borderWidth: 1,
-    backgroundColor: COLORS.textbox,
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    color: COLORS.primary,
+
+  // LOCATION
+  locationStyle: {
     borderColor: COLORS.placeholder,
-    borderRadius: 7,
-  },
-  conditionInputLabel: {
+    width: "100%",
     fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 5,
-    color: "#444",
-    marginTop: 20,
+    marginTop: 30,
+  },
+
+  // STATUS & PRICE CONTAINER
+  statusPriceContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginVertical: 10,
+  },
+  halfInput: {
+    flex: 1,
   },
 
   postCancelContainer: {
     flexDirection: "row-reverse",
     justifyContent: "center",
-    marginTop: 20,
     gap: 15,
   },
+  // POST BUTTON
   postBtn: {
     backgroundColor: COLORS.darkGreen,
     width: "45%",
@@ -411,6 +410,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+
+  // CANCEL BUTTON
   cancelBtn: {
     backgroundColor: COLORS.placeholder,
     width: "45%",
@@ -418,6 +419,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
+
+  // IMAGE VIEW
   imageIconTextContainer: {
     alignItems: "center",
   },

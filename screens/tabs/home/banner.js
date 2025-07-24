@@ -17,7 +17,7 @@ export default function Banner() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleBannerPress = (index) => {
-    if (index === 0) router.push("/donateNow");
+    if (index === 0) router.push("/unitedfeed");
     else if (index === 1) router.push("/trade");
     else if (index === 2) router.push("/aboutUs");
   };

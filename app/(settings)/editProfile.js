@@ -10,6 +10,7 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  Alert,
 } from "react-native";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -20,6 +21,14 @@ import { COLORS } from "../../assets/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import HeaderBar from "../../components/header";
 import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  SlideInLeft,
+  SlideInRight,
+  ZoomIn,
+} from "react-native-reanimated";
 
 export default function EditProfileScreen() {
   const [form, setForm] = useState({
@@ -91,7 +100,29 @@ export default function EditProfileScreen() {
   return (
     <>
       <StatusBar style="light" translucent />
-      <HeaderBar title="Edit Profile" confirmBack={false} />
+      <HeaderBar
+        title="Edit Profile"
+        confirmBack={false}
+        rightComponent={
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert(
+                "Confirm Save",
+                "Are you sure you want to save your changes?",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Save",
+                    onPress: () => router.push("/profile"),
+                  },
+                ]
+              )
+            }
+          >
+            <Text style={{ color: "#fff", fontWeight: "600" }}>Save</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <View style={styles.container}>
         <KeyboardAvoidingView
@@ -102,101 +133,126 @@ export default function EditProfileScreen() {
             contentContainerStyle={styles.scrollContainer}
             showsVerticalScrollIndicator={false}
           >
-            <LinearGradient
-              colors={["#0f0c29", COLORS.darkGreen, "#000000"]}
-              style={styles.profileImageContainer}
-            >
-              <Image
-                source={
-                  profileImage
-                    ? { uri: profileImage }
-                    : require("../../assets/images/banner1.png")
-                }
-                style={styles.profileImage}
-              />
-              <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
-                <MaterialCommunityIcons
-                  name="account-edit"
-                  size={22}
-                  color="#fff"
+            <Animated.View entering={ZoomIn.delay(200).duration(500)}>
+              <LinearGradient
+                colors={["#0f0c29", COLORS.darkGreen, "#000000"]}
+                style={styles.profileImageContainer}
+              >
+                <Image
+                  source={
+                    profileImage
+                      ? { uri: profileImage }
+                      : require("../../assets/images/banner1.png")
+                  }
+                  style={styles.profileImage}
                 />
-              </TouchableOpacity>
-            </LinearGradient>
+                <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
+                  <MaterialCommunityIcons
+                    name="account-edit"
+                    size={22}
+                    color="#fff"
+                  />
+                </TouchableOpacity>
+              </LinearGradient>
+            </Animated.View>
 
             <Text style={styles.addressText}>Fullname</Text>
-            <InputField
-              placeholder="First Name"
-              value={form.firstName}
-              onChangeText={(text) => handleChange("firstName", text)}
-              {...inputProps}
-            />
-            <InputField
-              placeholder="Last Name"
-              value={form.lastName}
-              onChangeText={(text) => handleChange("lastName", text)}
-              {...inputProps}
-            />
+            <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+              <InputField
+                placeholder="First Name"
+                value={form.firstName}
+                onChangeText={(text) => handleChange("firstName", text)}
+                {...inputProps}
+              />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+              <InputField
+                placeholder="Last Name"
+                value={form.lastName}
+                onChangeText={(text) => handleChange("lastName", text)}
+                {...inputProps}
+              />
+            </Animated.View>
 
             <Text style={styles.addressText}>Phone Number</Text>
-            <InputField
-              placeholder="Phone Number"
-              keyboardType="phone-pad"
-              value={form.phone}
-              onChangeText={(text) => handleChange("phone", text)}
-              {...inputProps}
-            />
+            <Animated.View entering={FadeInDown.delay(300).duration(500)}>
+              <InputField
+                placeholder="Phone Number"
+                keyboardType="phone-pad"
+                value={form.phone}
+                onChangeText={(text) => handleChange("phone", text)}
+                {...inputProps}
+              />
+            </Animated.View>
 
             <Text style={styles.addressText}>Date of birth</Text>
-            <Pressable
-              style={styles.datePicker}
-              onPress={() => setShowPicker(true)}
-            >
-              <Text
-                style={[
-                  styles.datePickerText,
-                  !form.birthDate && styles.placeholderText,
-                ]}
+            <Animated.View entering={FadeInDown.delay(400).duration(500)}>
+              <Pressable
+                style={styles.datePicker}
+                onPress={() => setShowPicker(true)}
               >
-                {form.birthDate
-                  ? form.birthDate.toLocaleDateString()
-                  : "Birth Date"}
-              </Text>
-            </Pressable>
+                <Text
+                  style={[
+                    styles.datePickerText,
+                    !form.birthDate && styles.placeholderText,
+                  ]}
+                >
+                  {form.birthDate
+                    ? form.birthDate.toLocaleDateString()
+                    : "Birth Date"}
+                </Text>
+              </Pressable>
+            </Animated.View>
 
             <Text style={styles.addressText}>
               Address(Region or Province,City,Barangay,Street,Postal Code)
             </Text>
-            <InputField
-              placeholder="Region / Province"
-              value={form.region}
-              onChangeText={(text) => handleChange("region", text)}
-              {...inputProps}
-            />
-            <InputField
-              placeholder="City"
-              value={form.city}
-              onChangeText={(text) => handleChange("city", text)}
-              {...inputProps}
-            />
-            <InputField
-              placeholder="Barangay"
-              value={form.barangay}
-              onChangeText={(text) => handleChange("barangay", text)}
-              {...inputProps}
-            />
-            <InputField
-              placeholder="Street"
-              value={form.street}
-              onChangeText={(text) => handleChange("street", text)}
-              {...inputProps}
-            />
-            <InputField
-              placeholder="Postal Code"
-              keyboardType="number-pad"
-              value={form.postal}
-              onChangeText={(text) => handleChange("postal", text)}
-              {...inputProps}
-            />
+            <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+              <InputField
+                placeholder="Region / Province"
+                value={form.region}
+                onChangeText={(text) => handleChange("region", text)}
+                {...inputProps}
+              />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(600).duration(500)}>
+              <InputField
+                placeholder="City"
+                value={form.city}
+                onChangeText={(text) => handleChange("city", text)}
+                {...inputProps}
+              />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(700).duration(500)}>
+              <InputField
+                placeholder="Barangay"
+                value={form.barangay}
+                onChangeText={(text) => handleChange("barangay", text)}
+                {...inputProps}
+              />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(800).duration(500)}>
+              <InputField
+                placeholder="Street"
+                value={form.street}
+                onChangeText={(text) => handleChange("street", text)}
+                {...inputProps}
+              />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(900).duration(500)}>
+              <InputField
+                placeholder="Postal Code"
+                keyboardType="number-pad"
+                value={form.postal}
+                onChangeText={(text) => handleChange("postal", text)}
+                {...inputProps}
+              />
+            </Animated.View>
 
             {showPicker && Platform.OS === "android" && (
               <DateTimePicker
@@ -258,20 +314,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: COLORS.primary,
   },
-  header: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f1f1f1",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
+
   scrollContainer: {
     padding: 20,
+    paddingBottom: 100,
   },
   profileImageContainer: {
     alignItems: "center",

@@ -1,30 +1,30 @@
-import React from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  Platform,
-  StyleSheet,
-} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Animated, { FadeInRight } from "react-native-reanimated";
 import dayjs from "dayjs";
-import { COLORS } from "../../../assets/constants/theme";
 import { router } from "expo-router";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated, { FadeInRight } from "react-native-reanimated";
+import { COLORS } from "../../../assets/constants/theme";
 
 export default function ProductList({ status }) {
   const renderItem = ({ item, index }) => {
     const isPending = item.status === "Pending Trade";
 
     return (
-      <Animated.View
-        entering={FadeInRight.duration(900).delay(index * 100)}
-        key={index}
+      <TouchableOpacity
+        onPress={() => router.push(`/(product-details)/${item.id}`)}
       >
-        <TouchableOpacity style={styles.allCards}>
+        <Animated.View
+          entering={FadeInRight.duration(900).delay(index * 100)}
+          style={styles.allCards}
+        >
           {/* LEFT CONTAINER */}
           <View style={styles.leftContainer}>
             <Image
@@ -62,7 +62,9 @@ export default function ProductList({ status }) {
                 </>
               ) : (
                 <>
-                  <TouchableOpacity onPress={() => router.push("/editItem")}>
+                  <TouchableOpacity
+                    onPress={() => router.push(`/(edit-add-item)/${item.id}`)}
+                  >
                     <FontAwesome name="edit" size={25} color={COLORS.primary} />
                   </TouchableOpacity>
                   <TouchableOpacity>
@@ -79,29 +81,41 @@ export default function ProductList({ status }) {
               {dayjs(item.createdAt).format("MM/DD/YYYY")}
             </Text>
           </View>
-        </TouchableOpacity>
-      </Animated.View>
+        </Animated.View>
+      </TouchableOpacity>
     );
   };
 
   return (
-    <View>
-      {/* NOTE MESSAGE */}
-      <View style={styles.verificationNote}>
-        <Text style={styles.verificationText}>
-          Want to be trusted by other users? Verify your account to boost your
-          credibility and trade with confidence.
-        </Text>
-      </View>
-
+    <View style={{ flex: 1 }}>
       <FlatList
         data={status}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: Platform.OS === "ios" ? 130 : 200,
+          paddingBottom: 60,
+          flexGrow: 1,
         }}
+        ListHeaderComponent={
+          <View style={styles.verificationNote}>
+            <Text style={styles.verificationText}>
+              Want to be trusted by other users? Verify your account to boost
+              your credibility and trade with confidence.
+            </Text>
+          </View>
+        }
+        // —— Empty State ——
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <MaterialIcons
+              name="inventory"
+              size={48}
+              color={COLORS.secondary}
+            />
+            <Text style={styles.emptyText}>No items to display.</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -177,5 +191,17 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 25,
     paddingRight: 15,
+  },
+  // —— Empty State Styles ——
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: COLORS.secondary,
+    marginTop: 12,
+    textAlign: "center",
   },
 });

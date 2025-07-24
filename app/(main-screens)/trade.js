@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
-import TradeScreenTabs from "../../screens/tabs/trade/tradeScreenTabs";
 import axios from "axios";
-import PostItem from "../../screens/tabs/trade/postItem";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../assets/constants/theme";
-import { StatusBar } from "expo-status-bar";
+import PostItem from "../../screens/tabs/trade/postItem";
+import TradeScreenTabs from "../../screens/tabs/trade/tradeScreenTabs";
 
 export default function TradeScreenWrapper() {
   const [products, setProducts] = useState(null);
@@ -15,7 +15,7 @@ export default function TradeScreenWrapper() {
   }, []);
 
   const getProductsDetails = async () => {
-    const URL = `http://192.168.100.10:5000/products`;
+    const URL = `http://192.168.100.112:5000/products`;
     try {
       const response = await axios.get(URL);
       setProducts(response.data);
@@ -27,7 +27,7 @@ export default function TradeScreenWrapper() {
   if (!products) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={COLORS.darkGreen} />
       </View>
     );
   }

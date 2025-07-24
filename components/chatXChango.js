@@ -1,28 +1,26 @@
 import { TouchableOpacity, Image, StyleSheet } from "react-native";
 import * as Animatable from "react-native-animatable";
-import { COLORS } from "../../../assets/constants/theme";
+import { COLORS } from "../assets/constants/theme";
 
-export default function ChatXChango() {
+export default function ChatXChango({ positionStyle, imageStyle }) {
   return (
-    <>
-      <TouchableOpacity style={styles.postBtn}>
-        <Animatable.View
-          animation="pulse"
-          iterationCount="infinite"
-          duration={1500}
-        >
-          <Image source={require("../../../assets/images/XChangoChat.png")} />
-        </Animatable.View>
-      </TouchableOpacity>
-    </>
+    <TouchableOpacity style={[styles.postBtn, positionStyle]}>
+      <Animatable.View
+        animation="pulse"
+        iterationCount="infinite"
+        duration={1500}
+      >
+        <Image
+          source={require("../assets/images/XChangoChat.png")}
+          style={imageStyle}
+        />
+      </Animatable.View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   postBtn: {
-    position: "absolute",
-    bottom: 15,
-    right: 25,
     backgroundColor: COLORS.mainBackgroundColor,
     borderRadius: 28,
     width: 50,

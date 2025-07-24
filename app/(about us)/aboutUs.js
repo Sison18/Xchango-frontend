@@ -1,24 +1,42 @@
-import React, { useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
 import {
-  View,
-  Text,
+  Image,
+  Linking,
+  Modal,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
-  Linking,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Avatar } from "react-native-paper";
 import Collapsible from "react-native-collapsible";
-import { AntDesign } from "@expo/vector-icons";
-import faqData from "../../assets/data/faqData.json";
-import { COLORS } from "../../assets/constants/theme";
+import { Avatar } from "react-native-paper";
+import Animated, { SlideInUp, ZoomIn } from "react-native-reanimated";
 
-import Animated, { ZoomIn, SlideInUp } from "react-native-reanimated";
+import {
+  COLORS,
+  featureDetails,
+  featureImages,
+} from "../../assets/constants/theme";
+import faqData from "../../assets/data/faqData.json";
 
 export default function AboutUsPage() {
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState("");
+  const [featureDescription, setFeatureDescription] = useState("");
+  const [featureImage, setFeatureImage] = useState(null);
+
   const toggleFaq = (index) => setActiveFaq(activeFaq === index ? null : index);
+
+  const toggleModal = (feature) => {
+    setSelectedFeature(feature);
+    setFeatureDescription(featureDetails[feature]);
+    setFeatureImage(featureImages[feature]);
+    setIsModalVisible(!isModalVisible);
+  };
 
   return (
     <>
@@ -69,21 +87,25 @@ export default function AboutUsPage() {
         <View style={styles.keyFeaturesContainer}>
           <Text style={styles.sectionTitle}>Key Features</Text>
           {[
-            "🔁 Item-for-Item Trading",
-            "📦 Shipping & Tracking",
-            "✅ Community Verification",
-            "💬 In-App Chat for Traders",
-            "🎁 Donate Items to Help Others",
+            "⇄ Item-for-Item Trading",
+            "❒ Shipping & Tracking",
+            "✓ Community Verification",
+            "✉ In-App Chat for Traders",
+            "𐙚 ̊ Donate Items to Help Others",
           ].map((feature, i) => (
             <Animated.View
               key={i}
-              style={styles.keyFeatureCard}
               entering={ZoomIn.duration(600).delay(i * 300)}
             >
-              <Text style={styles.featureEmoji}>{feature.split(" ")[0]}</Text>
-              <Text style={styles.featureText}>
-                {feature.split(" ").slice(1).join(" ")}
-              </Text>
+              <TouchableOpacity
+                onPress={() => toggleModal(feature)}
+                style={styles.keyFeatureCard}
+              >
+                <Text style={styles.featureEmoji}>{feature.split(" ")[0]}</Text>
+                <Text style={styles.featureText}>
+                  {feature.split(" ").slice(1).join(" ")}
+                </Text>
+              </TouchableOpacity>
             </Animated.View>
           ))}
         </View>
@@ -99,9 +121,9 @@ export default function AboutUsPage() {
             what you need.
           </Text>
         </View>
-        <View style={styles.card}>
+        <View style={styles.card2}>
           <Text style={styles.cardTitle}>Our Mission</Text>
-          <Text style={styles.cardText}>
+          <Text style={styles.cardText2}>
             Our mission at Xchango is to revolutionize the way people exchange
             goods by bringing back the power of bartering. We aim to build a
             trusted and efficient platform where individuals can trade items
@@ -173,6 +195,29 @@ export default function AboutUsPage() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* MODAL FOR KEY FEATURES */}
+      <Modal visible={isModalVisible} transparent animationType="fade">
+        
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContainer2}>
+            <Text style={styles.modalTitle}>{selectedFeature}</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+            <Text style={styles.modalText}>{featureDescription}</Text>
+            {featureImage && (
+              <Image source={featureImage} style={styles.featureImage} />
+            )}
+            <TouchableOpacity
+              onPress={() => setIsModalVisible(false)}
+              style={styles.closeButton}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+        
+      </Modal>
     </>
   );
 }
@@ -201,7 +246,7 @@ const styles = StyleSheet.create({
   // SCROLLVIEW CONTAINER
   content: {
     padding: 20,
-    paddingBottom: 40,
+    backgroundColor: COLORS.mainBackgroundColor,
   },
   // SECTION TITLE
   sectionTitle: {
@@ -244,6 +289,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.primary,
     marginRight: 10,
+    width: "85%",
   },
   faqAnswerBox: {
     backgroundColor: COLORS.lightgreen,
@@ -274,7 +320,7 @@ const styles = StyleSheet.create({
   featureText: { fontSize: 14 },
   // WHO WE ARE & OUR MISSION CONTAINER
   card: {
-    backgroundColor: COLORS.mainBackgroundColor,
+    backgroundColor: COLORS.lightgreen,
     borderRadius: 20,
     padding: 20,
     shadowColor: "black",
@@ -282,20 +328,44 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
     marginBottom: 20,
-    alignItems: "center",
+    alignItems: "flex-start",
+    borderBottomRightRadius: 900,
+    borderTopRightRadius: 900,
+  },
+  card2: {
+    backgroundColor: COLORS.lightgreen,
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "black",
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    marginBottom: 20,
+    alignItems: "flex-end",
+    borderBottomLeftRadius: 900,
+    borderTopLeftRadius: 900,
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 5,
     color: COLORS.darkGreen,
   },
   cardText: {
     fontSize: 15,
     lineHeight: 22,
-    color: COLORS.primary,
+    color: COLORS.secondary,
     letterSpacing: 1,
-    textAlign: "center",
+    textAlign: "left",
+    width: 280,
+  },
+  cardText2: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: COLORS.secondary,
+    letterSpacing: 1,
+    textAlign: "right",
+    width: 280,
   },
   // OUR TEAM
   teamSection: { marginVertical: 20 },
@@ -313,4 +383,49 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   contactText: { fontSize: 15, marginVertical: 4, color: COLORS.primary },
+  // MODAL
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "center",
+    paddingVertical: 20,
+    
+  },
+  modalContainer2: {
+    backgroundColor: COLORS.mainBackgroundColor,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    marginHorizontal: 20,
+    borderRadius: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    color: COLORS.secondary,
+    textAlign: "justify",
+    marginBottom: 10,
+  },
+  featureImage: {
+    width: "100%",
+    height: 300,
+    marginBottom: 20,
+    borderRadius: 10,
+    resizeMode: "contain",
+  },
+  closeButton: {
+    backgroundColor: COLORS.xchangoColor,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: COLORS.mainBackgroundColor,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });

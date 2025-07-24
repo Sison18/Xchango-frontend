@@ -9,9 +9,11 @@ import {
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { COLORS } from "../assets/constants/theme";
 
-export default function Wishlist() {
+export default function Wishlist({ initialItems = [] }) {
   const [text, setText] = useState("");
-  const [words, setWords] = useState([]);
+  const [words, setWords] = useState(
+    Array.isArray(initialItems) ? initialItems : []
+  );
 
   const handleAdd = () => {
     if (text.trim() === "") return;
@@ -27,7 +29,6 @@ export default function Wishlist() {
     <View>
       {/* TEXT FIELD & ADD TEXT CONTAINER */}
       <View style={styles.txtFieldAddContainer}>
-        {/* WISHLIST */}
         <TextInput
           value={text}
           onChangeText={setText}
@@ -35,7 +36,6 @@ export default function Wishlist() {
           placeholderTextColor={COLORS.placeholder}
           style={styles.wishlist}
         />
-        {/* ADD BUTTON */}
         <TouchableOpacity onPress={handleAdd} style={styles.addButton}>
           <MaterialIcons name="add" size={24} color="white" />
         </TouchableOpacity>

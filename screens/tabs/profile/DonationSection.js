@@ -27,14 +27,26 @@ export default function DonationSection() {
         entering={FadeInDown.delay(300).duration(400)}
         style={styles.bottomButtons}
       >
-        <TouchableOpacity style={styles.smallButton}>
-          <Text style={styles.smallButtonText}>Your Donation</Text>
+        {/* UNITEDFEED */}
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={() => router.push("/unitedfeed")}
+        >
+          <Text style={styles.smallButtonText}>UnitedFeed</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.smallButton}>
+        {/* LEADERBOARDS */}
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={() => router.push("/leaderboards")}
+        >
           <Text style={styles.smallButtonText}>Leaderboards</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.smallButton}>
-          <Text style={styles.smallButtonText}>UnitedFeed</Text>
+        {/* DETAILS */}
+        <TouchableOpacity
+          style={styles.smallButton}
+          onPress={() => router.push("/details")}
+        >
+          <Text style={styles.smallButtonText}>Your Donation</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -72,6 +84,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
+    borderTopLeftRadius: 200,
+    borderTopRightRadius: 200,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
   donateButtonText: {
     color: "#fff",
@@ -97,6 +113,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+    borderTopRightRadius: 100,
+    borderTopLeftRadius: 900,
+    borderBottomLeftRadius: 100,
+    borderBottomRightRadius: 900,
   },
   smallButtonText: {
     fontSize: 12,

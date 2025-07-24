@@ -11,16 +11,13 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import Line from "../../../assets/constants/line";
 import { COLORS } from "../../../assets/constants/theme";
 
-export default function Products({ products }) {
+export default function UserItem({ products }) {
   const renderItem = ({ item, index }) => (
     <>
       {/* PRODUCT CARDS */}
-      <TouchableOpacity
-        onPress={() => router.push(`/(product-details)/${item.id}`)}
-      >
+      <TouchableOpacity onPress={() => router.push(`/${item.id}`)}>
         <Animated.View // Card animation at
           entering={FadeInDown.delay(150 * index).duration(500)}
           style={styles.animatedWrapper}
@@ -65,26 +62,15 @@ export default function Products({ products }) {
 
   return (
     <>
-      {/* SUGGESTED PRODUCTS & LINE CONTAINER */}
-      <View style={styles.suggestedProductsContainer}>
-        <Text style={styles.suggestedProductsText}>Suggested Products</Text>
-        <Line />
-      </View>
-
       {/* PRODUCT CARDS */}
       <FlatList
         data={products}
         renderItem={renderItem}
         numColumns={2}
         showsVerticalScrollIndicator={false}
+        style={styles.productsList}
         contentContainerStyle={{ alignItems: "center", paddingBottom: 0 }}
         columnWrapperStyle={styles.columnWrapper}
-        ListEmptyComponent={() => (
-          <View style={styles.emptyContainer}>
-            <FontAwesome5 name="box-open" size={48} color={COLORS.secondary} />
-            <Text style={styles.emptyText}>No products to show.</Text>
-          </View>
-        )}
       />
     </>
   );
@@ -95,21 +81,10 @@ const cardMargin = 8;
 const cardWidth = screenWidth / 2 - cardMargin * 2.5;
 
 const styles = StyleSheet.create({
-  // SUGGESTED PRODUCTS & LINE CONTAINER
-  suggestedProductsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 16,
-    marginBottom: 10,
-  },
-  suggestedProductsText: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginRight: 8,
-    color: COLORS.primary,
-  },
-
   // PRODUCT CARDS
+  productsList: {
+    paddingBottom: Platform.OS === "android" ? 50 : 60,
+  },
   animatedWrapper: {
     width: cardWidth,
     margin: cardMargin,
@@ -131,7 +106,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: COLORS.lightgreen,
+    backgroundColor: COLORS.mainBackgroundColor,
     padding: 5,
     borderRadius: 20,
     zIndex: 100,
@@ -191,22 +166,5 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     paddingVertical: 2,
     borderRadius: 10,
-  },
-  // EMPTY CONTAINER
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 250,
-    width: "100%",
-    paddingTop: 60,
-    paddingBottom: 60,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: COLORS.secondary,
-    marginTop: 12,
-    fontWeight: "500",
-    textAlign: "center",
   },
 });

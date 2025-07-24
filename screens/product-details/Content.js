@@ -1,7 +1,11 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import { COLORS } from "../../assets/constants/theme";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Animated, {
+  FadeIn
+} from "react-native-reanimated";
 import Line from "../../assets/constants/line";
+import { COLORS } from "../../assets/constants/theme";
 
 export default function Content({
   title,
@@ -13,6 +17,7 @@ export default function Content({
   name,
   rating,
   wishlist,
+  user,
 }) {
   const [expanded, setExpanded] = useState(false);
   const [expanded2, setExpanded2] = useState(false);
@@ -25,10 +30,18 @@ export default function Content({
     <>
       <Line />
       {/* TITLE-------------------------------------------------------------*/}
-      <Text style={styles.title}>{title}</Text>
+      <Animated.Text
+        entering={FadeIn.delay(100).duration(200)}
+        style={styles.title}
+      >
+        {title}
+      </Animated.Text>
 
       {/* DESCRIPTION CONTAINER-------------------------------------------- */}
-      <View style={styles.descriptionContainer}>
+      <Animated.View
+        style={styles.descriptionContainer}
+        entering={FadeIn.delay(100).duration(400)}
+      >
         <Text
           style={styles.descriptionText}
           numberOfLines={expanded ? undefined : MAX_LINES}
@@ -44,14 +57,21 @@ export default function Content({
             </Text>
           </TouchableOpacity>
         )}
-      </View>
+      </Animated.View>
 
       <Line />
 
       {/* OTHER INFORMATION------------------------------------------------- */}
       <View style={styles.otherContainer}>
         {/* PROFILE & NAME & RATING */}
-        <TouchableOpacity style={styles.profileNameRating}>
+        <TouchableOpacity
+          style={styles.profileNameRating}
+          onPress={() => {
+            if (user && user.id) {
+              router.push(`/(user-profile)/${user.id}`);
+            }
+          }}
+        >
           {/* PROFILE */}
           <Image source={{ uri: profile }} style={styles.profileImg} />
           {/* USERNAME & RATING */}
@@ -103,7 +123,7 @@ export default function Content({
 const styles = StyleSheet.create({
   // TITLE
   title: {
-    color: COLORS.primary,
+    color: COLORS.xchangoColor,
     fontSize: 20,
     fontWeight: "900",
     paddingTop: 5,
@@ -116,7 +136,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderWidth: 0.5,
     borderColor: COLORS.textboxBorderColor,
-    backgroundColor: "white",
+    backgroundColor: COLORS.mainBackgroundColor,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
@@ -125,7 +145,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 8,
-    marginVertical: 8,
+    marginTop: 10,
+    marginBottom: 20,
   },
   descriptionText: {
     fontSize: 14,
