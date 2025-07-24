@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Animated, { FadeInRight } from "react-native-reanimated";
-// 1️⃣ import an icon for flair
+
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS } from "../../../assets/constants/theme";
 
@@ -41,7 +41,6 @@ export default function ChatList({ products }) {
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 50, paddingTop: 10 }}
-        // 2️⃣ fill this in:
         ListEmptyComponent={() => (
           <View style={styles.emptyContainer}>
             <FontAwesome5 name="comments" size={48} color={COLORS.secondary} />
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 300,
+    paddingVertical: 300,
   },
   emptyText: {
     fontSize: 16,

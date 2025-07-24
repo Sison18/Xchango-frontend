@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
+    paddingVertical: 250,
     width: "100%",
   },
   emptyText: {
