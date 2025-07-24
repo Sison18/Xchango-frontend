@@ -1,3 +1,6 @@
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { router } from "expo-router";
 import {
   Platform,
   StyleSheet,
@@ -5,11 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { COLORS } from "../../../XChangoProject/assets/constants/theme";
-import { router } from "expo-router";
+import { COLORS } from "../../assets/constants/theme";
 
 export default function BottomBar() {
   return (
